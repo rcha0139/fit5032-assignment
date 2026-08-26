@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar navbar-expand-sm bg-body-tertiary">
+    <nav class="navbar navbar-expand-sm navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">
             <img :src="logo" />
@@ -8,7 +8,7 @@
         <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mx-auto mb-2 mb-sm-0">
+        <ul class="navbar-nav mb-2 mb-sm-0">
             <li class="nav-item">
             <a class="nav-link" href="#">About Us</a>
             </li>
@@ -28,6 +28,21 @@
             </li>
 
         </ul>
+        </div>
+        
+        <div class="dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle"></i>
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" href="#">Login</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#">Sign Up</a>
+                </li>
+            </ul>
         </div>
     </div>
     </nav>
@@ -52,6 +67,20 @@
     .navbar-brand img {
         height: 40px;
         width: auto;
+    }
+
+    .navbar-brand {
+        flex: 1;
+    }
+
+    .dropdown {
+        display: flex;
+        flex: 1;
+        justify-content: flex-end
+    }
+
+    .navbar-collapse {
+        justify-content: center
     }
 
 </style>
