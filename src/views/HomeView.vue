@@ -1,5 +1,4 @@
 <template>
-    <NavBar />
     <div class="home">
         <h1>Restore the Reef</h1>
         <p>We are committed to restoring coral cover along the Great Barrier Reef</p>
@@ -7,7 +6,6 @@
 </template>
 
 <script setup>
-import NavBar from '@/components/NavBar.vue';
 
 </script>
 

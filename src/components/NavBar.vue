@@ -9,24 +9,23 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mb-2 mb-sm-0">
-            <li class="nav-item">
-            <a class="nav-link" href="#">About Us</a>
-            </li>
+            <router-link to="/" class="nav-link" active-class="active" aria-current="page"
+                >About Us</router-link
+            >
 
+            <!-- will have a mini dropdown later -->
+            <router-link to="/" class="nav-link" active-class="active" aria-current="page"
+                >Learn</router-link
+            >
+
+            <router-link to="/" class="nav-link" active-class="active" aria-current="page"
+                >Projects</router-link
+            >
             
             <!-- will have a mini dropdown later -->
-            <li class="nav-item">
-            <a class="nav-link" href="#">Learn</a>
-            </li>
-
-            <li class="nav-item">
-            <a class="nav-link" href="#">Projects</a>
-            </li>
-            
-            <!-- will have a mini dropdown later -->
-            <li class="nav-item">
-            <a class="nav-link" href="#">Events</a>
-            </li>
+            <router-link to="/" class="nav-link" active-class="active" aria-current="page"
+                >Events</router-link
+            >
 
         </ul>
         </div>
