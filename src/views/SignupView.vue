@@ -9,7 +9,7 @@ const formData = ref({
 })
 
 const submitForm = () => {
-    validateUsername(true);
+    validateEmail(true);
     validatePassword(true);
 
     if (!errors.value.email && !errors.value.password) {
@@ -34,12 +34,12 @@ const errors = ref ({
     lastname: null
 });
 
-const validateUsername = (blur) => {
+const validateEmail = (blur) => {
     if (formData.value.email.length == 0) {
         if (blur) errors.value.email = "Email is required."
     }
-    else if (formData.value.email.length < 3) {
-        if (blur) errors.value.email = "Email must be at least 3 characters long."
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.value.email)) {
+        if (blur) errors.value.email = "Please enter a valid email address."
     }
     else {
         errors.value.email = null;
@@ -84,8 +84,8 @@ const validatePassword = (blur) => {
                         <div class="mb-3">
                             <label for="email" class="form-label">Email (required)</label>
                             <input type="text" class="form-control" id="email" 
-                                @blur="() => validateUsername(true)" 
-                                @input="() => validateUsername(false)"
+                                @blur="() => validateEmail(true)" 
+                                @input="() => validateEmail(false)"
                             v-model="formData.email">
                             <div v-if="errors.email" class="text-danger">{{ errors.email }}</div>
                         </div>

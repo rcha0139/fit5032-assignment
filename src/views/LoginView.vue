@@ -34,7 +34,7 @@ const validateEmail = (blur) => {
     if (formData.value.email.length == 0) {
         if (blur) errors.value.email = "Email is required."
     }
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.value.email)) {
         if (blur) errors.value.email = "Please enter a valid email address."
     }
     else {
