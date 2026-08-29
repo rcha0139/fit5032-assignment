@@ -10,6 +10,7 @@
         <div class="row">
             <div class="col-md-6 mb-4" v-for="project in projects" :key="project.id">
                 <div class="card h-100">
+                    <img class="card-img-top" :src="project.image" :alt="project.alt">
                     <div class="card-body">
                         <h5 class="card-title">{{ project.name }}</h5>
                         <p class="card-text">{{ project.description }}</p>
@@ -30,5 +31,11 @@
 <style scoped>
     .projects {
         padding: 100px 40px 40px;
+    }
+    
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+        width: 100%;
     }
 </style>
