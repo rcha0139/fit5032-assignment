@@ -9,21 +9,21 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mb-2 mb-sm-0">
-            <router-link to="/" class="nav-link" active-class="active" aria-current="page"
+            <router-link to="/about" class="nav-link" active-class="active" aria-current="page"
                 >About Us</router-link
             >
 
             <!-- will have a mini dropdown later -->
-            <router-link to="/" class="nav-link" active-class="active" aria-current="page"
+            <router-link to="/learn" class="nav-link" active-class="active" aria-current="page"
                 >Learn</router-link
             >
 
-            <router-link to="/" class="nav-link" active-class="active" aria-current="page"
+            <router-link to="/projects" class="nav-link" active-class="active" aria-current="page"
                 >Projects</router-link
             >
             
             <!-- will have a mini dropdown later -->
-            <router-link to="/" class="nav-link" active-class="active" aria-current="page"
+            <router-link to="/events" class="nav-link" active-class="active" aria-current="page"
                 >Events</router-link
             >
 
@@ -36,15 +36,15 @@
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <a class="dropdown-item" href="#">Profile</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="#">Login</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="#">Sign Up</a>
-                </li>
+                <router-link to="/profile" class="dropdown-item" active-class="active" aria-current="page"
+                    >Profile</router-link
+                >
+                <router-link to="/login" class="dropdown-item" active-class="active" aria-current="page"
+                    >Login</router-link
+                >
+                <router-link to="/signup" class="dropdown-item" active-class="active" aria-current="page"
+                    >Signup</router-link
+                >
             </ul>
         </div>
     </div>
