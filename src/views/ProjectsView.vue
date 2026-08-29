@@ -8,20 +8,27 @@
             Have a look through and find the work you want to be part of.</p>
 
         <div class="row">
-            <div class="col-md-6 col-lg-4" v-for="project in projects" :key="project.id">
-                {{ project.name }} ({{ project.description }})
+            <div class="col-md-6 mb-4" v-for="project in projects" :key="project.id">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ project.name }}</h5>
+                        <p class="card-text">{{ project.description }}</p>
+                        <small>{{ project.location }}</small>
+                    </div>
+                </div>
             </div>
         </div>
+
+        
     </div>
 </template>
 
 <script setup>
-
+    import projects from '/src/data/projects.json'
 </script>
 
 <style scoped>
     .projects {
         padding: 100px 40px 40px;
     }
-
 </style>
