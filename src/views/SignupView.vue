@@ -2,26 +2,75 @@
 import { ref } from 'vue'
 
 const formData = ref({
-    username: '',
+    email: '',
     password: '',
-    isAustralian: false,
-    gender: '',
-    reason: ''
+    firstname: '',
+    lastname: ''
 })
 
 const submitForm = () => {
-    console.log('Submitted:', formData.value)
+    validateUsername(true);
+    validatePassword(true);
+
+    if (!errors.value.email && !errors.value.password) {
+        console.log(formData.value)
+        clearForm();
+    }
 }
 
 const clearForm = () => {
     formData.value = {
-        username: '',
+        email: '',
         password: '',
-        isAustralian: false,
-        gender: '',
-        reason: ''
+        firstname: '',
+        lastname: '',
     }
 }
+
+const errors = ref ({
+    email: null,
+    password: null,
+    firstname: null,
+    lastname: null
+});
+
+const validateUsername = (blur) => {
+    if (formData.value.email.length == 0) {
+        if (blur) errors.value.email = "Email is required."
+    }
+    else if (formData.value.email.length < 3) {
+        if (blur) errors.value.email = "Email must be at least 3 characters long."
+    }
+    else {
+        errors.value.email = null;
+    }
+};
+
+const validatePassword = (blur) => {
+  const password = formData.value.password;
+  const minLength = 12;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+  if (password.length == 0) {
+    if (blur) errors.value.password = "Password is required.";
+  } else if (password.length < minLength) {
+    if (blur) errors.value.password = `Password must be at least ${minLength} characters long.`;
+  } else if (!hasUppercase) {
+    if (blur) errors.value.password = "Password must contain at least one uppercase letter.";
+  } else if (!hasLowercase) {
+    if (blur) errors.value.password = "Password must contain at least one lowercase letter.";
+  } else if (!hasNumber) {
+    if (blur) errors.value.password = "Password must contain at least one number.";
+  } else if (!hasSpecialChar) {
+    if (blur) errors.value.password = "Password must contain at least one special character.";
+  } else {
+    errors.value.password = null;
+  }
+};
+
 </script>
 
 <template>
@@ -31,23 +80,33 @@ const clearForm = () => {
                 <div class="col-md-8 offset-md-2">
                     <h1 class="text-center">Sign Up</h1>
                     <form @submit.prevent="submitForm">
+
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" v-model="formData.username">
+                            <label for="email" class="form-label">Email (required)</label>
+                            <input type="text" class="form-control" id="email" 
+                                @blur="() => validateUsername(true)" 
+                                @input="() => validateUsername(false)"
+                            v-model="formData.email">
+                            <div v-if="errors.email" class="text-danger">{{ errors.email }}</div>
                         </div>
+
                         <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" v-model="formData.password">
+                            <label for="password" class="form-label">Password (required)</label>
+                            <input type="password" class="form-control" id="password"
+                                @blur="() => validatePassword(true)" 
+                                @input="() => validatePassword(false)"
+                            v-model="formData.password">
+                            <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
                         </div>
                     
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3 mb-md-0">
                                 <label for="firstname" class="form-label">First Name</label>
                                 <input type="text" class="form-control" id="firstname" v-model="formData.firstname">
                             </div>
                             <div class="col-md-6">
                                 <label for="lastname" class="form-label">Last Name</label>
-                                <input type="lastname" class="form-control" id="lastname" v-model="formData.lastname">
+                                <input type="text" class="form-control" id="lastname" v-model="formData.lastname">
                             </div>
                         </div>
 
@@ -55,6 +114,10 @@ const clearForm = () => {
                             <button type="submit" class="btn btn-primary me-2">Submit</button>
                             <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
                         </div>
+
+                        <p class="text-center mt-3">
+                            Already have an account? <RouterLink to="/login">Login</RouterLink>
+                        </p>
                     </form>
                 </div>
             </div>
