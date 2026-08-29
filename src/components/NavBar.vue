@@ -13,6 +13,7 @@
             <a class="nav-link" href="#">About Us</a>
             </li>
 
+            
             <!-- will have a mini dropdown later -->
             <li class="nav-item">
             <a class="nav-link" href="#">Learn</a>
@@ -36,6 +37,9 @@
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" href="#">Profile</a>
+                </li>
                 <li>
                     <a class="dropdown-item" href="#">Login</a>
                 </li>
