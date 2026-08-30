@@ -125,7 +125,7 @@ const validatePassword = (blur) => {
 
 <style scoped>
     .signup {
-    padding-top: 70px;
+        padding: 100px 40px 40px;
     }
 
     .btn-primary {
