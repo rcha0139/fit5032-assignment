@@ -44,7 +44,7 @@
                     >Login</router-link
                 >
                 <router-link to="/signup" class="dropdown-item" active-class="active" aria-current="page"
-                    >Signup</router-link
+                    >Sign Up</router-link
                 >
             </ul>
         </div>
@@ -64,7 +64,7 @@
         width: 100%;
         z-index: 1000; /*makes this float above other content*/
         
-        background-color: #008496;
+        background-color: #006989;
         color: #fff;
     }
 

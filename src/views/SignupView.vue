@@ -129,5 +129,25 @@ const validatePassword = (blur) => {
     .signup {
     padding-top: 70px;
     }
+
+    .btn-primary {
+        background-color: #006989;
+        border-color: #006989;
+    }
+
+    .btn-primary:hover {
+        background-color: #00587a;
+        border-color: #00587a;
+    }
+
+    a {
+        color: #006989;
+    }
+
+    a:hover {
+        color: #00587a;
+    }
+
+
 </style>
 
