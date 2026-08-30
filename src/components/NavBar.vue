@@ -29,8 +29,7 @@
             >
 
         </ul>
-        </div>
-        
+
         <div class="dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-person-circle"></i>
@@ -48,6 +47,8 @@
                 >
             </ul>
         </div>
+        </div>
+        
     </div>
     </nav>
 </template>
