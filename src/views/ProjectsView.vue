@@ -19,8 +19,6 @@
                 </div>
             </div>
         </div>
-
-        
     </div>
 </template>
 
@@ -37,5 +35,13 @@
         height: 200px;
         object-fit: cover;
         width: 100%;
+    }
+
+    .card-body {
+        display: flex; flex-direction: column;
+    }
+
+    small {
+        margin-top: auto;
     }
 </style>

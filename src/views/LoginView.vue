@@ -55,41 +55,39 @@ const validatePassword = (blur) => {
 </script>
 
 <template>
-    <div class="container login">
-        <div class="container mt-5">
-            <div class="row">
-                <div class="col-md-8 offset-md-2">
-                    <h1 class="text-center">Login</h1>
-                    <form @submit.prevent="submitForm">
+    <div class="container login mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h1 class="text-center">Login</h1>
+                <form @submit.prevent="submitForm">
 
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="text" class="form-control" id="email" 
-                                @blur="() => validateEmail(true)" 
-                                @input="() => validateEmail(false)"
-                            v-model="formData.email">
-                            <div v-if="errors.email" class="text-danger">{{ errors.email }}</div>
-                        </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="email" 
+                            @blur="() => validateEmail(true)" 
+                            @input="() => validateEmail(false)"
+                        v-model="formData.email">
+                        <div v-if="errors.email" class="text-danger">{{ errors.email }}</div>
+                    </div>
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password"
-                                @blur="() => validatePassword(true)" 
-                                @input="() => validatePassword(false)"
-                            v-model="formData.password">
-                            <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
-                        </div>
-                    
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary me-2">Submit</button>
-                            <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
-                        </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password"
+                            @blur="() => validatePassword(true)" 
+                            @input="() => validatePassword(false)"
+                        v-model="formData.password">
+                        <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
+                    </div>
+                
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary me-2">Submit</button>
+                        <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
+                    </div>
 
-                        <p class="text-center mt-3">
-                            Don't have an account? <RouterLink to="/signup">Sign Up</RouterLink>
-                        </p>
-                    </form>
-                </div>
+                    <p class="text-center mt-3">
+                        Don't have an account? <RouterLink to="/signup">Sign Up</RouterLink>
+                    </p>
+                </form>
             </div>
         </div>
     </div>
@@ -116,5 +114,9 @@ const validatePassword = (blur) => {
 
     a:hover {
         color: #00587a;
+    }
+
+    .login {
+        max-width: 720px;
     }
 </style>

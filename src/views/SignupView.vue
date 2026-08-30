@@ -74,52 +74,50 @@ const validatePassword = (blur) => {
 </script>
 
 <template>
-    <div class="container signup">
-        <div class="container mt-5">
-            <div class="row">
-                <div class="col-md-8 offset-md-2">
-                    <h1 class="text-center">Sign Up</h1>
-                    <form @submit.prevent="submitForm">
+    <div class="container signup mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h1 class="text-center">Sign Up</h1>
+                <form @submit.prevent="submitForm">
 
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email (required)</label>
-                            <input type="text" class="form-control" id="email" 
-                                @blur="() => validateEmail(true)" 
-                                @input="() => validateEmail(false)"
-                            v-model="formData.email">
-                            <div v-if="errors.email" class="text-danger">{{ errors.email }}</div>
-                        </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email (required)</label>
+                        <input type="text" class="form-control" id="email" 
+                            @blur="() => validateEmail(true)" 
+                            @input="() => validateEmail(false)"
+                        v-model="formData.email">
+                        <div v-if="errors.email" class="text-danger">{{ errors.email }}</div>
+                    </div>
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password (required)</label>
-                            <input type="password" class="form-control" id="password"
-                                @blur="() => validatePassword(true)" 
-                                @input="() => validatePassword(false)"
-                            v-model="formData.password">
-                            <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password (required)</label>
+                        <input type="password" class="form-control" id="password"
+                            @blur="() => validatePassword(true)" 
+                            @input="() => validatePassword(false)"
+                        v-model="formData.password">
+                        <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
+                    </div>
+                
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label for="firstname" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstname" v-model="formData.firstname">
                         </div>
-                    
-                        <div class="row mb-3">
-                            <div class="col-md-6 mb-3 mb-md-0">
-                                <label for="firstname" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="firstname" v-model="formData.firstname">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="lastname" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="lastname" v-model="formData.lastname">
-                            </div>
+                        <div class="col-md-6">
+                            <label for="lastname" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastname" v-model="formData.lastname">
                         </div>
+                    </div>
 
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary me-2">Submit</button>
-                            <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
-                        </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary me-2">Submit</button>
+                        <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
+                    </div>
 
-                        <p class="text-center mt-3">
-                            Already have an account? <RouterLink to="/login">Login</RouterLink>
-                        </p>
-                    </form>
-                </div>
+                    <p class="text-center mt-3">
+                        Already have an account? <RouterLink to="/login">Login</RouterLink>
+                    </p>
+                </form>
             </div>
         </div>
     </div>
@@ -148,6 +146,9 @@ const validatePassword = (blur) => {
         color: #00587a;
     }
 
+    .signup {
+        max-width: 720px;
+    }
 
 </style>
 
