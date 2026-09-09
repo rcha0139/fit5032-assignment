@@ -1,5 +1,8 @@
 <script setup>
 import { ref } from 'vue'
+import { initializeApp } from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { useRouter } from 'vue-router';
 
 const formData = ref({
     email: '',
@@ -16,6 +19,8 @@ const submitForm = () => {
         console.log(formData.value)
         clearForm();
     }
+
+    register();
 }
 
 const clearForm = () => {
@@ -71,6 +76,18 @@ const validatePassword = (blur) => {
   }
 };
 
+const auth = getAuth()
+const router = useRouter()
+
+const register = () => {
+    createUserWithEmailAndPassword(auth, formData.value.email, formData.value.password)
+    .then((data) => {
+        console.log("Firebase Registration Successful!")
+        router.push("/Firelogin")
+    }).catch((error) => {
+        console.log(error.code);
+    })
+};
 </script>
 
 <template>
@@ -110,7 +127,7 @@ const validatePassword = (blur) => {
                     </div>
 
                     <div class="text-center">
-                        <button type="submit" class="btn btn-primary me-2">Submit</button>
+                        <button type="submit" class="btn btn-primary me-2" @click="register">Submit</button>
                         <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
                     </div>
 
