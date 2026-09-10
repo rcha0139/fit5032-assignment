@@ -14,8 +14,10 @@ const formData = ref({
 const submitForm = () => {
     validateEmail(true);
     validatePassword(true);
+    validateFirstName(true);
+    validateLastName(true);
 
-    if (!errors.value.email && !errors.value.password) {
+    if (!errors.value.email && !errors.value.password && errors.value.firstname && errors.value.lastname) {
         console.log(formData.value)
         clearForm();
     }
@@ -76,6 +78,24 @@ const validatePassword = (blur) => {
   }
 };
 
+const validateFirstName = (blur) => {
+    if (formData.value.firstname.length == 0) {
+        if (blur) errors.value.firstname = "First name is required."
+    }
+    else {
+        errors.value.firstname = null;
+    }
+}
+
+const validateLastName = (blur) => {
+    if (formData.value.lastname.length == 0) {
+        if (blur) errors.value.lastname = "Last name is required."
+    }
+    else {
+        errors.value.lastname = null;
+    }
+}
+
 const auth = getAuth()
 const router = useRouter()
 
@@ -118,11 +138,20 @@ const register = () => {
                     <div class="row mb-3">
                         <div class="col-md-6 mb-3 mb-md-0">
                             <label for="firstname" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="firstname" v-model="formData.firstname">
+                            <input type="text" class="form-control" id="firstname"
+                                @blur="() => validateFirstName(true)" 
+                                @input="() => validateFirstName(false)"
+                            v-model="formData.firstname">
+                            <div v-if="errors.firstname" class="text-danger">{{ errors.firstname }}</div>
                         </div>
+
                         <div class="col-md-6">
                             <label for="lastname" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lastname" v-model="formData.lastname">
+                            <input type="text" class="form-control" id="lastname" 
+                                @blur="() => validateFirstName(true)" 
+                                @input="() => validateFirstName(false)"
+                            v-model="formData.lastname">
+                            <div v-if="errors.lastname" class="text-danger">{{ errors.lastname }}</div>
                         </div>
                     </div>
 
