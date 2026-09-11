@@ -63,18 +63,16 @@ const validatePassword = (blur) => {
 
   if (password.length == 0) {
     if (blur) errors.value.password = "Password is required.";
-  } else if (password.length < minLength) {
-    if (blur) errors.value.password = `Password must be at least ${minLength} characters long.`;
-  } else if (!hasUppercase) {
-    if (blur) errors.value.password = "Password must contain at least one uppercase letter.";
-  } else if (!hasLowercase) {
-    if (blur) errors.value.password = "Password must contain at least one lowercase letter.";
-  } else if (!hasNumber) {
-    if (blur) errors.value.password = "Password must contain at least one number.";
-  } else if (!hasSpecialChar) {
-    if (blur) errors.value.password = "Password must contain at least one special character.";
   } else {
-    errors.value.password = null;
+  const problems = [];
+  if (password.length < minLength) problems.push(`Must be at least ${minLength} characters long.`);
+  if (!hasUppercase)   problems.push("Must contain at least one uppercase letter.");
+  if (!hasLowercase)   problems.push("Must contain at least one lowercase letter.");
+  if (!hasNumber)      problems.push("Must contain at least one number.");
+  if (!hasSpecialChar) problems.push("Must contain at least one special character.");
+
+
+  errors.value.password = problems.length && blur ? problems : null;
   }
 };
 
@@ -132,7 +130,9 @@ const register = () => {
                             @blur="() => validatePassword(true)" 
                             @input="() => validatePassword(false)"
                         v-model="formData.password">
-                        <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
+                        <ul v-if="errors.password" class="error">
+                            <li v-for="(msg, i) in errors.password" :key="i">{{ msg }}</li>
+                        </ul>
                     </div>
                 
                     <div class="row mb-3">
@@ -153,6 +153,7 @@ const register = () => {
                             v-model="formData.lastname">
                             <div v-if="errors.lastname" class="text-danger">{{ errors.lastname }}</div>
                         </div>
+
                     </div>
 
                     <div class="text-center">
@@ -194,6 +195,10 @@ const register = () => {
 
     .signup {
         max-width: 720px;
+    }
+
+    .error {
+        color: #817e85;
     }
 
 </style>
