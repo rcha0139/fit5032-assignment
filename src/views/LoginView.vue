@@ -23,6 +23,10 @@ const clearForm = () => {
         email: '',
         password: '',
     }
+    errors.value = {
+        email: null,
+        password: null
+    }
 }
 
 const errors = ref ({
