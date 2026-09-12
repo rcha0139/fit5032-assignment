@@ -17,12 +17,10 @@ const submitForm = () => {
     validateFirstName(true);
     validateLastName(true);
 
-    if (!errors.value.email && !errors.value.password && errors.value.firstname && errors.value.lastname) {
+    if (!errors.value.email && !errors.value.password && !errors.value.firstname && !errors.value.lastname) {
         console.log(formData.value)
-        clearForm();
-    }
-
-    register();
+        register();
+    }    
 }
 
 const clearForm = () => {
@@ -108,6 +106,7 @@ const register = () => {
     .then((data) => {
         console.log("Firebase Registration Successful!")
         router.push("/Firelogin")
+        clearForm();
     }).catch((error) => {
         console.log(error.code);
     })
@@ -155,8 +154,8 @@ const register = () => {
                         <div class="col-md-6">
                             <label for="lastname" class="form-label">Last Name</label>
                             <input type="text" class="form-control" id="lastname" 
-                                @blur="() => validateFirstName(true)" 
-                                @input="() => validateFirstName(false)"
+                                @blur="() => validateLastName(true)" 
+                                @input="() => validateLastName(false)"
                             v-model="formData.lastname">
                             <div v-if="errors.lastname" class="text-danger">{{ errors.lastname }}</div>
                         </div>
@@ -164,7 +163,7 @@ const register = () => {
                     </div>
 
                     <div class="text-center">
-                        <button type="submit" class="btn btn-primary me-2" @click="register">Submit</button>
+                        <button type="submit" class="btn btn-primary me-2">Submit</button>
                         <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
                     </div>
 
@@ -202,10 +201,6 @@ const register = () => {
 
     .signup {
         max-width: 720px;
-    }
-
-    .error {
-        color: #817e85;
     }
 
 </style>
