@@ -64,15 +64,15 @@ const validatePassword = (blur) => {
   if (password.length == 0) {
     if (blur) errors.value.password = "Password is required.";
   } else {
-  const problems = [];
-  if (password.length < minLength) problems.push(`Must be at least ${minLength} characters long.`);
-  if (!hasUppercase)   problems.push("Must contain at least one uppercase letter.");
-  if (!hasLowercase)   problems.push("Must contain at least one lowercase letter.");
-  if (!hasNumber)      problems.push("Must contain at least one number.");
-  if (!hasSpecialChar) problems.push("Must contain at least one special character.");
+    
+    const problems = [];
+    if (password.length < minLength) problems.push(`Must be at least ${minLength} characters long.`);
+    if (!hasUppercase)   problems.push("Must contain at least one uppercase letter.");
+    if (!hasLowercase)   problems.push("Must contain at least one lowercase letter.");
+    if (!hasNumber)      problems.push("Must contain at least one number.");
+    if (!hasSpecialChar) problems.push("Must contain at least one special character.");
 
-
-  errors.value.password = problems.length && blur ? problems : null;
+    errors.value.password = problems.length && blur ? problems : null;
   }
 };
 
@@ -130,9 +130,10 @@ const register = () => {
                             @blur="() => validatePassword(true)" 
                             @input="() => validatePassword(false)"
                         v-model="formData.password">
-                        <ul v-if="errors.password" class="error">
+                        <ul v-if="Array.isArray(errors.password)" class="error text-danger">
                             <li v-for="(msg, i) in errors.password" :key="i">{{ msg }}</li>
                         </ul>
+                        <div v-else-if="errors.password" class="text-danger">{{ errors.password }}</div>
                     </div>
                 
                     <div class="row mb-3">

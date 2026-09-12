@@ -1,8 +1,18 @@
 <template>
     <div class="home">
+        <!-- Banner - add images and fonts -->
+        <div class="Banner">
+
+        </div>
+
+        <!-- Preliminary Header - move to banner later -->
         <h1>Restore the Reef</h1>
-        <p>We are committed to restoring coral cover along the Great Barrier Reef</p>
+        <p>We are committed to restoring coral cover along the Great Barrier Reef.</p>
+
+        
+
     </div>
+
 </template>
 
 <script setup>
