@@ -89,7 +89,7 @@
                     </div>
                 </div>
                 
-                <div class="d-flex align-items-center gap-3 mt-3">
+                <div class="d-flex align-items-center gap-3 mt-4">
                     <button class="btn btn-primary" @click="saveProfile">Save changes</button>
                     <span v-if="saveMessage" class="text-success">
                         <i class="bi bi-check-circle"></i> {{ saveMessage }}
