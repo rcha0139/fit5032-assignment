@@ -4,14 +4,26 @@
     import { db } from '@/firebase';
 
     const events = ref([])
+    const ratings = ref([])
+
+    const averageFor = (eventId) => {
+        const forThisEvent = ratings.value.filter((r) => r.eventId === eventId);
+        if (forThisEvent.length === 0) return null;
+        const total = forThisEvent.reduce((sum, r) => sum + r.score, 0);
+
+        return total / forThisEvent.length;
+    }
 
     onMounted(async () => {
-        const snapshot = await getDocs(collection(db, 'events'));
-        events.value = snapshot.docs.map((doc) => ({ 
+        const eventsSnapshot = await getDocs(collection(db, 'events'));
+        const ratingsSnapshot = await getDocs(collection(db, 'ratings'));
+
+        events.value = eventsSnapshot.docs.map((doc) => ({ 
             id: doc.id, 
             ...doc.data() 
         }));
-        console.log(events.value)
+
+        ratings.value = ratingsSnapshot.docs.map((doc) => doc.data())
 })
 </script>
 
@@ -26,6 +38,10 @@
 
                         <p class="card-text"><small class="text-muted">{{ event.date }} · {{ event.site }}</small></p>
                         <p class="card-text">{{ event.description }}</p>
+
+                        <p class="card-text" v-if="averageFor(event.id)">
+                            {{ averageFor(event.id).toFixed(1) }} out of 5
+                        </p>
                     </div>
                 </div> 
             </div>
