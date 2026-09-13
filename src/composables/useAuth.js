@@ -18,3 +18,12 @@ onAuthStateChanged(getAuth(), async (user) => {
         userProfile.value = null;
     }
 });
+
+export const getCurrentUser = () => {
+    return new Promise((resolve) => {
+        const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
+            unsubscribe();
+            resolve(user);
+        })
+    })
+};
