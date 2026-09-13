@@ -23,7 +23,7 @@
     <div class="admin">
         <h1 class="mb-4">Admin Dashboard</h1>
 
-        <div class="row g-3 mb-4">
+        <div class="row g-3 mb-5">
             <div class="col-md-3">
                 <div class="card">
                     <div class="card-body text-center">
