@@ -36,6 +36,16 @@
 
         await loadRatings()
 })
+
+const countFor = (eventId) => {
+    return ratings.value.filter((r) => r.eventId === eventId).length;
+}
+
+const myRatingFor = (eventId) => {
+    const mine = ratings.value.find((r) => r.eventId === eventId && r.uid === currentUser.value?.uid);
+    return mine ? mine.score : 0;
+}
+
 </script>
 
 <template>
@@ -51,12 +61,14 @@
                         <p class="card-text">{{ event.description }}</p>
 
                         <p class="card-text" v-if="averageFor(event.id)">
-                            {{ averageFor(event.id).toFixed(1) }} out of 5
+                            {{ averageFor(event.id).toFixed(1) }} out of 5 from {{ countFor(event.id) }} {{ countFor(event.id) === 1 ? 'rating' : 'ratings' }}
                         </p>
                         
                         <div v-if="currentUser">
-                            <span v-for="n in 5" :key="n" @click="rate(event.id, n)" >
-                                <i :class="n <= (averageFor(event.id) || 0) ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+                            <small class="text-muted d-block">Your rating</small>
+                            
+                            <span class="star" v-for="n in 5" :key="n" @click="rate(event.id, n)">
+                                <i :class="n <= myRatingFor(event.id) ? 'bi bi-star-fill' : 'bi bi-star'"></i>
                             </span>
                         </div>
                     </div>
@@ -69,6 +81,10 @@
 <style scoped>
     .events {
         padding: 100px 40px 40px;
+    }
+
+    .star {
+        cursor: pointer;
     }
 
 </style>
