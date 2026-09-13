@@ -36,15 +36,27 @@
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end">
-                <router-link to="/profile" class="dropdown-item" active-class="active" aria-current="page"
-                    >Profile</router-link
-                >
-                <router-link to="/login" class="dropdown-item" active-class="active" aria-current="page"
-                    >Login</router-link
-                >
-                <router-link to="/signup" class="dropdown-item" active-class="active" aria-current="page"
-                    >Sign Up</router-link
-                >
+                
+                <template v-if="currentUser">
+                    <li>
+                        <router-link to="/profile" class="dropdown-item" active-class="active" aria-current="page"
+                            >Profile</router-link
+                        >
+
+                        <button class="dropdown-item" @click="logout">Logout</button>
+                    </li>
+                </template>
+
+                <template v-else>
+                    <li>
+                        <router-link to="/login" class="dropdown-item" active-class="active" aria-current="page"
+                            >Login</router-link
+                        >
+                        <router-link to="/signup" class="dropdown-item" active-class="active" aria-current="page"
+                            >Sign Up</router-link
+                        >
+                    </li>
+                </template>
             </ul>
         </div>
         </div>
@@ -55,6 +67,8 @@
 
 <script setup>
     import logo from '@/assets/navbar-logo.png'
+    import { currentUser, logout } from '@/composables/useAuth'
+    
 </script>
 
 <style scoped>

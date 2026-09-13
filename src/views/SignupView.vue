@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue'
-import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'vue-router';
 
@@ -105,7 +104,7 @@ const register = () => {
     createUserWithEmailAndPassword(auth, formData.value.email, formData.value.password)
     .then((data) => {
         console.log("Firebase Registration Successful!")
-        router.push("/Firelogin")
+        router.push("/")
         clearForm();
     }).catch((error) => {
         console.log(error.code);

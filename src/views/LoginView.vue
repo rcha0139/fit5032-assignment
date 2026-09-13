@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from 'vue'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { useRouter } from 'vue-router';
 
 const formData = ref({
     email: '',
@@ -7,16 +9,18 @@ const formData = ref({
 })
 
 const submitForm = () => {
+    loginError.value = null
+
     validateEmail(true);
     validatePassword(true);
 
     if (!errors.value.email && !errors.value.password) {
         console.log(formData.value)
-        clearForm();
+        login();
     }
-    // TODO add 'username/password combination dont match any account' validation
-    // when i get firebase
 }
+
+const loginError = ref(null);
 
 const clearForm = () => {
     formData.value = {
@@ -56,6 +60,22 @@ const validatePassword = (blur) => {
   }
 };
 
+const auth = getAuth();
+const router = useRouter()
+
+const login = () => {
+    signInWithEmailAndPassword(auth, formData.value.email, formData.value.password)
+    .then((data) => {
+        console.log("Login Successful!")
+        router.push("/")
+        clearForm();
+    }).catch((error) => {
+        loginError.value = "Email or password is incorrect."
+        console.log(error.code);
+    })
+};
+
+
 </script>
 
 <template>
@@ -63,6 +83,8 @@ const validatePassword = (blur) => {
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 <h1 class="text-center">Login</h1>
+                    <div v-if="loginError" class="alert alert-danger">{{ loginError }}</div>
+
                 <form @submit.prevent="submitForm">
 
                     <div class="mb-3">
