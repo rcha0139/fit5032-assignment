@@ -8,6 +8,7 @@ import { db } from '@/firebase';
 const formData = ref({
     email: '',
     password: '',
+    confirmPassword: '',
     firstname: '',
     lastname: ''
 })
@@ -17,10 +18,11 @@ const submitForm = () => {
 
     validateEmail(true);
     validatePassword(true);
+    validateConfirmPassword(true);
     validateFirstName(true);
     validateLastName(true);
 
-    if (!errors.value.email && !errors.value.password && !errors.value.firstname && !errors.value.lastname) {
+    if (!errors.value.email && !errors.value.password && !errors.value.confirmPassword && !errors.value.firstname && !errors.value.lastname) {
         register();
     }    
 }
@@ -29,12 +31,14 @@ const clearForm = () => {
     formData.value = {
         email: '',
         password: '',
+        confirmPassword: '',
         firstname: '',
         lastname: '',
     }
     errors.value = {
         email: null,
         password: null,
+        confirmPassword: null,
         firstname: null,
         lastname: null,
     }
@@ -43,6 +47,7 @@ const clearForm = () => {
 const errors = ref ({
     email: null,
     password: null,
+    confirmPassword: null,
     firstname: null,
     lastname: null
 });
@@ -81,6 +86,16 @@ const validatePassword = (blur) => {
     errors.value.password = problems.length && blur ? problems : null;
   }
 };
+
+const validateConfirmPassword = (blur) => {
+    if (formData.value.confirmPassword.length == 0) {
+        if (blur) errors.value.confirmPassword = "Please confirm your password.";
+    } else if (formData.value.confirmPassword != formData.value.password){
+        if (blur) errors.value.confirmPassword = "Passwords do not match."
+    } else {
+        errors.value.confirmPassword = null;
+    }
+}
 
 const validateFirstName = (blur) => {
     if (formData.value.firstname.length == 0) {
@@ -156,6 +171,15 @@ const registerError = ref(null);
                             <li v-for="(msg, i) in errors.password" :key="i">{{ msg }}</li>
                         </ul>
                         <div v-else-if="errors.password" class="text-danger">{{ errors.password }}</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password (required)</label>
+                        <input type="password" class="form-control" id="confirmPassword"
+                            @blur="() => validateConfirmPassword(true)" 
+                            @input="() => validateConfirmPassword(false)"
+                        v-model="formData.confirmPassword">
+                        <div v-if="errors.confirmPassword" class="text-danger">{{ errors.confirmPassword }}</div>
                     </div>
                 
                     <div class="row mb-3">
