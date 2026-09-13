@@ -67,9 +67,14 @@
                         >
                     </li>
 
+                    <li v-if="userProfile?.role === 'admin'">
+                        <router-link to="/admin" class="dropdown-item">Admin Dashboard</router-link>
+                    </li>
+
                     <li>
                         <button class="dropdown-item" @click="handleLogout">Logout</button>
                     </li>
+                    
                 </template>
 
                 <template v-else>
