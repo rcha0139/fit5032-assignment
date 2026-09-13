@@ -1,7 +1,8 @@
 <script setup>
-    import { collection, getDocs } from 'firebase/firestore';
+    import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
     import { ref, onMounted } from 'vue';
     import { db } from '@/firebase';
+    import { currentUser } from '@/composables/useAuth';
 
     const events = ref([])
     const ratings = ref([])
@@ -14,16 +15,26 @@
         return total / forThisEvent.length;
     }
 
+    const loadRatings = async () => {
+        const snap = await getDocs(collection(db, 'ratings'));
+        ratings.value = snap.docs.map((d) => d.data());
+    }
+
+    const rate = async (eventId, score) => {
+        const docId = `${eventId}_${currentUser.value.uid}`
+        await setDoc(doc(db, 'ratings', docId), { eventId, uid: currentUser.value.uid, score })
+        await loadRatings()
+    }
+
     onMounted(async () => {
         const eventsSnapshot = await getDocs(collection(db, 'events'));
-        const ratingsSnapshot = await getDocs(collection(db, 'ratings'));
 
         events.value = eventsSnapshot.docs.map((doc) => ({ 
             id: doc.id, 
             ...doc.data() 
         }));
 
-        ratings.value = ratingsSnapshot.docs.map((doc) => doc.data())
+        await loadRatings()
 })
 </script>
 
@@ -42,6 +53,12 @@
                         <p class="card-text" v-if="averageFor(event.id)">
                             {{ averageFor(event.id).toFixed(1) }} out of 5
                         </p>
+                        
+                        <div v-if="currentUser">
+                            <span v-for="n in 5" :key="n" @click="rate(event.id, n)" >
+                                <i :class="n <= (averageFor(event.id) || 0) ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+                            </span>
+                        </div>
                     </div>
                 </div> 
             </div>
