@@ -1,3 +1,8 @@
+<script setup>
+    import logo from '@/assets/navbar-logo.png'
+    import { currentUser, logout, userProfile } from '@/composables/useAuth'
+</script>
+
 <template>
     <nav class="navbar navbar-expand-sm navbar-dark">
     <div class="container-fluid">
@@ -32,7 +37,8 @@
 
         <div class="dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-person-circle"></i>
+                {{ userProfile?.firstname }}
+                <i class="bi bi-person-circle ms-2"></i>
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end">
@@ -64,12 +70,6 @@
     </div>
     </nav>
 </template>
-
-<script setup>
-    import logo from '@/assets/navbar-logo.png'
-    import { currentUser, logout } from '@/composables/useAuth'
-    
-</script>
 
 <style scoped>
     .navbar {
