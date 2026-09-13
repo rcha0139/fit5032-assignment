@@ -13,6 +13,8 @@ const formData = ref({
 })
 
 const submitForm = () => {
+    registerError.value = null
+
     validateEmail(true);
     validatePassword(true);
     validateFirstName(true);
@@ -114,8 +116,17 @@ const register = () => {
         clearForm();
     }).catch((error) => {
         console.log(error.code);
+        if (error.code === 'auth/email-already-in-use') {
+            registerError.value = "An account with this email already exists."
+        }
+        else {
+            registerError.value = "Could not create account. Please try again."
+        }
     })
 };
+
+const registerError = ref(null);
+
 </script>
 
 <template>
@@ -123,6 +134,7 @@ const register = () => {
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 <h1 class="text-center">Sign Up</h1>
+                <div v-if="registerError" class="alert alert-danger">{{ registerError }}</div>
                 <form @submit.prevent="submitForm">
 
                     <div class="mb-3">
