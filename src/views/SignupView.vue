@@ -19,7 +19,6 @@ const submitForm = () => {
     validateLastName(true);
 
     if (!errors.value.email && !errors.value.password && !errors.value.firstname && !errors.value.lastname) {
-        console.log(formData.value)
         register();
     }    
 }

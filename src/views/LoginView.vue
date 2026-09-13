@@ -15,7 +15,6 @@ const submitForm = () => {
     validatePassword(true);
 
     if (!errors.value.email && !errors.value.password) {
-        console.log(formData.value)
         login();
     }
 }
