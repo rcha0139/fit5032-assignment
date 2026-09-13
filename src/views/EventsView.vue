@@ -23,9 +23,9 @@
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">{{ event.name }}</h5>
-                        {{ event.date }}
-                        {{ event.site }}
-                        {{ event.description }}
+
+                        <p class="card-text"><small class="text-muted">{{ event.date }} · {{ event.site }}</small></p>
+                        <p class="card-text">{{ event.description }}</p>
                     </div>
                 </div> 
             </div>
