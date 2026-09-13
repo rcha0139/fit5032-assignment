@@ -23,23 +23,32 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mb-2 mb-sm-0">
+            
+            <li class="nav-item">
             <router-link to="/about" class="nav-link" active-class="active" aria-current="page"
                 >About Us</router-link
             >
+            </li>
 
             <!-- will have a mini dropdown later -->
+            <li class="nav-item">
             <router-link to="/learn" class="nav-link" active-class="active" aria-current="page"
                 >Learn</router-link
             >
+            </li>
 
+            <li class="nav-item">
             <router-link to="/projects" class="nav-link" active-class="active" aria-current="page"
                 >Projects</router-link
             >
+            </li>
             
             <!-- will have a mini dropdown later -->
+            <li class="nav-item">
             <router-link to="/events" class="nav-link" active-class="active" aria-current="page"
                 >Events</router-link
             >
+            </li>
 
         </ul>
 
@@ -56,7 +65,9 @@
                         <router-link to="/profile" class="dropdown-item" active-class="active" aria-current="page"
                             >Profile</router-link
                         >
+                    </li>
 
+                    <li>
                         <button class="dropdown-item" @click="handleLogout">Logout</button>
                     </li>
                 </template>
@@ -66,6 +77,8 @@
                         <router-link to="/login" class="dropdown-item" active-class="active" aria-current="page"
                             >Login</router-link
                         >
+                    </li>
+                    <li>
                         <router-link to="/signup" class="dropdown-item" active-class="active" aria-current="page"
                             >Sign Up</router-link
                         >
