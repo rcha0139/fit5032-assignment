@@ -1,3 +1,16 @@
+<script setup>
+    import projects from '/src/data/projects.json'
+    import { ref, computed } from 'vue';
+
+    const search = ref('')
+
+    const filteredProjects = computed(() => {
+        return projects.filter((p) =>
+            p.name.toLowerCase().includes(search.value.toLowerCase())
+        );
+    })
+</script>
+
 <template>
     <div class="projects">
         <h1>Projects</h1>
@@ -7,8 +20,10 @@
             one depends on volunteers, donors and community partners to keep running. 
             Have a look through and find the work you want to be part of.</p>
 
+        <input type="text" class="form-control mb-4" placeholder="Search projects..." v-model="search">
+
         <div class="row">
-            <div class="col-md-6 mb-4" v-for="project in projects" :key="project.id">
+            <div class="col-md-6 mb-4" v-for="project in filteredProjects" :key="project.id">
                 <div class="card h-100">
                     <img class="card-img-top" :src="project.image" :alt="project.alt">
                     <div class="card-body">
@@ -21,10 +36,6 @@
         </div>
     </div>
 </template>
-
-<script setup>
-    import projects from '/src/data/projects.json'
-</script>
 
 <style scoped>
     .projects {
