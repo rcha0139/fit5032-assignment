@@ -15,11 +15,49 @@
     }, { immediate: true });
 
     const saveProfile = async () => {
-    await updateDoc(doc(db, 'users', currentUser.value.uid), {
-        firstname: formData.value.firstname,
-        lastname: formData.value.lastname
-    });
+        saveMessage.value = null
+
+        validateFirstName(true)
+        validateLastName(true)
+
+        if (!errors.value.firstname && !errors.value.lastname) {
+            await updateDoc(doc(db, 'users', currentUser.value.uid), {
+                firstname: formData.value.firstname,
+                lastname: formData.value.lastname
+            });
+
+            userProfile.value.firstname = formData.value.firstname;
+            userProfile.value.lastname = formData.value.lastname;
+
+            saveMessage.value = "Changes saved."
+        }
     }
+
+    const validateFirstName = (blur) => {
+        if (formData.value.firstname.length == 0) {
+            if (blur) errors.value.firstname = "First name is required."
+        }
+        else {
+            errors.value.firstname = null;
+        }
+    }
+
+    const validateLastName = (blur) => {
+        if (formData.value.lastname.length == 0) {
+            if (blur) errors.value.lastname = "Last name is required."
+        }
+        else {
+            errors.value.lastname = null;
+        }
+    }
+
+    const errors = ref ({
+        firstname: null,
+        lastname: null
+    });
+
+    const saveMessage = ref(null)
+
 </script>
 
 <template>
@@ -35,15 +73,28 @@
                 <div class="row mb-3 g-3">
                     <div class="col-md-6">
                         <label for="firstname" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="firstname" v-model="formData.firstname">
+                        <input type="text" class="form-control" id="firstname" 
+                            @blur="() => validateFirstName(true)" 
+                            @input="() => validateFirstName(false)" 
+                        v-model="formData.firstname">
+                        <div v-if="errors.firstname" class="text-danger">{{ errors.firstname }}</div>
                     </div>
                     <div class="col-md-6">
                         <label for="lastname" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="lastname" v-model="formData.lastname">
+                        <input type="text" class="form-control" id="lastname" 
+                            @blur="() => validateLastName(true)" 
+                            @input="() => validateLastName(false)" 
+                       v-model="formData.lastname">
+                       <div v-if="errors.lastname" class="text-danger">{{ errors.lastname }}</div>
                     </div>
                 </div>
                 
-                <button class="btn btn-primary mt-3" @click="saveProfile">Save changes</button>
+                <div class="d-flex align-items-center gap-3 mt-3">
+                    <button class="btn btn-primary" @click="saveProfile">Save changes</button>
+                    <span v-if="saveMessage" class="text-success">
+                        <i class="bi bi-check-circle"></i> {{ saveMessage }}
+                    </span>
+                </div>
                 
             </div>
         </div>
