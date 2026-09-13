@@ -58,6 +58,24 @@
             </div>
         </div>
 
+        <h5 class="mb-3">Upcoming events</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Site</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="event in events" :key="event.id">
+                    <td>{{ event.name }}</td>
+                    <td>{{ event.date }}</td>
+                    <td>{{ event.site }}</td>
+                </tr>
+            </tbody>
+        </table>
+
     </div>
 </template>
 <style scoped>
