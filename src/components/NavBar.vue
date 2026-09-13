@@ -1,6 +1,14 @@
 <script setup>
     import logo from '@/assets/navbar-logo.png'
     import { currentUser, logout, userProfile } from '@/composables/useAuth'
+    import { useRouter } from 'vue-router'
+
+    const router = useRouter()
+
+    const handleLogout = () => { 
+        logout()
+        router.push('/')
+     }
 </script>
 
 <template>
@@ -49,7 +57,7 @@
                             >Profile</router-link
                         >
 
-                        <button class="dropdown-item" @click="logout">Logout</button>
+                        <button class="dropdown-item" @click="handleLogout">Logout</button>
                     </li>
                 </template>
 
