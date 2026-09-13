@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'vue-router';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '@/firebase';
 
 const formData = ref({
     email: '',
@@ -104,6 +106,11 @@ const register = () => {
     createUserWithEmailAndPassword(auth, formData.value.email, formData.value.password)
     .then((data) => {
         console.log("Firebase Registration Successful!")
+        setDoc(doc(db, 'users', data.user.uid), { 
+            firstname:  formData.value.firstname, 
+            lastname:   formData.value.lastname,
+            email:      formData.value.email,
+            role:       'volunteer'})
         router.push("/")
         clearForm();
     }).catch((error) => {
