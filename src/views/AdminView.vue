@@ -32,6 +32,16 @@
         });
     })
 
+    const eventPage = ref(1)
+    const rowsPerPage = 10
+
+    const pagedEvents = computed(() => {
+        const start = (eventPage.value - 1) * rowsPerPage;
+        return filteredEvents.value.slice(start, start + rowsPerPage);
+    })
+
+    const totalPages = computed(() => Math.ceil(filteredEvents.value.length / rowsPerPage));
+
     onMounted(async () => {
         const usersSnap = await getDocs(collection(db, 'users'));
         users.value = usersSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -99,13 +109,18 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="event in filteredEvents" :key="event.id">
+                <tr v-for="event in pagedEvents" :key="event.id">
                     <td>{{ event.name }}</td>
                     <td>{{ event.date }}</td>
                     <td>{{ event.site }}</td>
                 </tr>
             </tbody>
         </table>
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-sm btn-outline-secondary" :disabled="eventPage === 1" @click="eventPage--">Previous</button>
+            <span>Page {{ eventPage }} of {{ totalPages }}</span>
+            <button class="btn btn-sm btn-outline-secondary" :disabled="eventPage >= totalPages" @click="eventPage++">Next</button>
+        </div>
 
     </div>
 </template>
