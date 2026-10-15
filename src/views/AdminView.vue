@@ -1,10 +1,19 @@
 <script setup>
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, computed } from 'vue';
     import { collection, getDocs } from 'firebase/firestore';
     import { db } from '@/firebase';
 
     const users = ref([])
     const events = ref([])
+    const eventSearch = ref({ name: '', date: '', site: '' })
+    
+    const filteredEvents = computed(() => {
+        return events.value.filter((e) =>
+            e.name.toLowerCase().includes(eventSearch.value.name.toLowerCase()) &&
+            e.date.toLowerCase().includes(eventSearch.value.date.toLowerCase()) &&
+            e.site.toLowerCase().includes(eventSearch.value.site.toLowerCase())
+        );
+    })
 
     onMounted(async () => {
         const usersSnap = await getDocs(collection(db, 'users'));
@@ -66,9 +75,14 @@
                     <th>Date</th>
                     <th>Site</th>
                 </tr>
+                <tr>
+                    <th><input class="form-control form-control-sm" placeholder="Search name" v-model="eventSearch.name"></th>
+                    <th><input class="form-control form-control-sm" placeholder="Search date" v-model="eventSearch.date"></th>
+                    <th><input class="form-control form-control-sm" placeholder="Search site" v-model="eventSearch.site"></th>
+                </tr>
             </thead>
             <tbody>
-                <tr v-for="event in events" :key="event.id">
+                <tr v-for="event in filteredEvents" :key="event.id">
                     <td>{{ event.name }}</td>
                     <td>{{ event.date }}</td>
                     <td>{{ event.site }}</td>
