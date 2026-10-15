@@ -7,12 +7,29 @@
     const events = ref([])
     const eventSearch = ref({ name: '', date: '', site: '' })
     
+    const eventSort = ref({ column: 'name', direction: 'asc' })
+
+    const sortBy = (column) => {
+        if (eventSort.value.column === column) {
+            eventSort.value.direction = eventSort.value.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            eventSort.value.column = column;
+            eventSort.value.direction = 'asc';
+        }
+    }
+
     const filteredEvents = computed(() => {
-        return events.value.filter((e) =>
+        const filtered = events.value.filter((e) =>
             e.name.toLowerCase().includes(eventSearch.value.name.toLowerCase()) &&
             e.date.toLowerCase().includes(eventSearch.value.date.toLowerCase()) &&
             e.site.toLowerCase().includes(eventSearch.value.site.toLowerCase())
         );
+
+        return [...filtered].sort((a, b) => {
+            const col = eventSort.value.column;
+            const result = String(a[col]).localeCompare(String(b[col]));
+            return eventSort.value.direction === 'asc' ? result : -result;
+        });
     })
 
     onMounted(async () => {
@@ -71,9 +88,9 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Date</th>
-                    <th>Site</th>
+                    <th @click="sortBy('name')" class="sortable">Name</th>
+                    <th @click="sortBy('date')" class="sortable">Date</th>
+                    <th @click="sortBy('site')" class="sortable">Site</th>
                 </tr>
                 <tr>
                     <th><input class="form-control form-control-sm" placeholder="Search name" v-model="eventSearch.name"></th>
@@ -95,5 +112,10 @@
 <style scoped>
     .admin {
         padding: 100px 40px 40px
+    }
+
+    .sortable 
+    { 
+        cursor: pointer; 
     }
 </style>
