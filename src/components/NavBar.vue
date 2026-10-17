@@ -15,7 +15,7 @@
     <nav class="navbar navbar-expand-sm navbar-dark">
     <div class="container-fluid">
         <router-link class="navbar-brand" to="/">
-            <img :src="logo" />
+            <img :src="logo" alt="Restore the Reef home"/>
         </router-link>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,76 +23,64 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mb-2 mb-sm-0">
-            
-            <li class="nav-item">
-            <router-link to="/about" class="nav-link" active-class="active" aria-current="page"
-                >About Us</router-link
-            >
-            </li>
 
-            <!-- will have a mini dropdown later -->
             <li class="nav-item">
-            <router-link to="/learn" class="nav-link" active-class="active" aria-current="page"
-                >Learn</router-link
-            >
+            <router-link to="/about" class="nav-link" active-class="active">About Us</router-link>
             </li>
 
             <li class="nav-item">
-            <router-link to="/projects" class="nav-link" active-class="active" aria-current="page"
-                >Projects</router-link
-            >
+            <router-link to="/learn" class="nav-link" active-class="active">Learn</router-link>
             </li>
-            
-            <!-- will have a mini dropdown later -->
+
             <li class="nav-item">
-            <router-link to="/events" class="nav-link" active-class="active" aria-current="page"
-                >Events</router-link
-            >
+            <router-link to="/projects" class="nav-link" active-class="active">Projects</router-link>
+            </li>
+
+            <li class="nav-item">
+            <router-link to="/reefsites" class="nav-link" active-class="active">Reef Sites</router-link>
+            </li>
+
+            <li class="nav-item">
+            <router-link to="/events" class="nav-link" active-class="active">Events</router-link>
             </li>
 
         </ul>
 
         <div class="dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Account menu">
                 {{ userProfile?.firstname }}
-                <i class="bi bi-person-circle ms-2"></i>
+                <i class="bi bi-person-circle ms-2" aria-hidden="true"></i>
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end">
-                
+
                 <template v-if="currentUser">
                     <li>
-                        <router-link to="/profile" class="dropdown-item" active-class="active" aria-current="page"
-                            >Profile</router-link
-                        >
+                        <router-link to="/profile" class="dropdown-item" active-class="active">Profile</router-link>
                     </li>
 
                     <li v-if="userProfile?.role === 'admin'">
-                        <router-link to="/admin" class="dropdown-item">Admin Dashboard</router-link>
+                        <router-link to="/admin" class="dropdown-item" active-class="active">Admin Dashboard</router-link>
                     </li>
 
                     <li>
                         <button class="dropdown-item" @click="handleLogout">Logout</button>
                     </li>
-                    
+
                 </template>
 
                 <template v-else>
                     <li>
-                        <router-link to="/login" class="dropdown-item" active-class="active" aria-current="page"
-                            >Login</router-link
-                        >
+                        <router-link to="/login" class="dropdown-item" active-class="active">Login</router-link>
                     </li>
                     <li>
-                        <router-link to="/signup" class="dropdown-item" active-class="active" aria-current="page"
-                            >Sign Up</router-link
-                        >
+                        <router-link to="/signup" class="dropdown-item" active-class="active">Sign Up</router-link>
                     </li>
                 </template>
             </ul>
         </div>
         </div>
-        
+
     </div>
     </nav>
 </template>
@@ -126,6 +114,14 @@
 
     .navbar-collapse {
         justify-content: center
+    }
+
+    .navbar-dark .navbar-nav .nav-link {
+        color: #fff;
+    }
+
+    .navbar-dark .navbar-nav .nav-link:hover {
+        color: #d7eef4;
     }
 
 </style>

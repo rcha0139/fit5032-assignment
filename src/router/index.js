@@ -8,6 +8,7 @@ import EventsView from '@/views/EventsView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import SignupView from '@/views/SignupView.vue'
 import AdminView from '@/views/AdminView.vue'
+import ReefSitesView from '@/views/ReefSitesView.vue'
 
 import { getCurrentUser } from '@/composables/useAuth.js'
 import { doc, getDoc } from 'firebase/firestore'
@@ -60,6 +61,11 @@ const routes = [
         name: 'Admin',
         component: AdminView,
         meta: { requiresAdmin: true }
+    },
+    {
+        path: '/reefsites',
+        name: 'ReefSites',
+        component: ReefSitesView,
     }
 ]
 

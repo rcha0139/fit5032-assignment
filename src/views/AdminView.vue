@@ -8,12 +8,6 @@
     import { httpsCallable } from 'firebase/functions';
     import { functions } from '@/firebase';
 
-    const testPing = async () => {
-        const ping = httpsCallable(functions, 'ping');
-        const result = await ping();
-        console.log(result.data);
-    }
-
     Chart.register(...registerables)
 
     const users = ref([])
@@ -134,7 +128,6 @@
     }
 
     const emailCsv = async () => {
-        console.log('clicked')
         const headers = Object.keys(filteredUsers.value[0]);
         const lines = [
             headers.join(','),
@@ -144,17 +137,43 @@
 
         const sendEmail = httpsCallable(functions, 'sendEmail');
         try {
-            const result = await sendEmail({
+            await sendEmail({
                 to: 'rcha0139@student.monash.edu',
                 subject: 'Registered users report',
                 body: 'Please find the current user list attached.',
                 attachment: btoa(csv),
                 filename: 'users.csv'
             });
-            console.log('sent', result);
         } catch (e) {
             console.error('failed', e);
         }
+    }
+
+    const newsletter = ref({ subject: '', body: '' });
+
+    const selectedUsers = ref([]);
+    const newsletterSending = ref(false);
+    const newsletterResult = ref(null);
+
+    const sendNewsletter = async () => {
+        if (selectedUsers.value.length === 0) return;
+        newsletterSending.value = true;
+        newsletterResult.value = null;
+
+        const sendEmail = httpsCallable(functions, 'sendEmail');
+        try {
+            await sendEmail({
+                to: selectedUsers.value,
+                subject: newsletter.value.subject,
+                body: newsletter.value.body,
+                attachment: btoa(newsletter.value.body),
+                filename: 'newsletter.txt'
+            });
+            newsletterResult.value = `Sent to ${selectedUsers.value.length} recipients.`;
+        } catch (e) {
+            newsletterResult.value = 'Failed to send.';
+        }
+        newsletterSending.value = false;
     }
 
 </script>
@@ -163,7 +182,6 @@
     <div class="admin">
         <h1 class="mb-4">Admin Dashboard</h1>
 
-        <button class="btn btn-sm btn-outline-secondary mb-3" @click="testPing">Test Ping</button>
     <div class="row g-3 mb-4">
         <div class="col-md-7">
             <div class="row g-3 h-100">
@@ -213,14 +231,14 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th @click="sortBy('name')" class="sortable">Name</th>
-                    <th @click="sortBy('date')" class="sortable">Date</th>
-                    <th @click="sortBy('site')" class="sortable">Site</th>
+                    <th @click="sortBy('name')" class="sortable" tabindex="0" @keydown.enter="sortBy('name')">Name</th>
+                    <th @click="sortBy('date')" class="sortable" tabindex="0" @keydown.enter="sortBy('date')">Date</th>
+                    <th @click="sortBy('site')" class="sortable" tabindex="0" @keydown.enter="sortBy('site')">Site</th>
                 </tr>
                 <tr>
-                    <th><input class="form-control form-control-sm" placeholder="Search name" v-model="eventSearch.name"></th>
-                    <th><input class="form-control form-control-sm" placeholder="Search date" v-model="eventSearch.date"></th>
-                    <th><input class="form-control form-control-sm" placeholder="Search site" v-model="eventSearch.site"></th>
+                    <th><input class="form-control form-control-sm" placeholder="Search name" aria-label="Search events by name" v-model="eventSearch.name"></th>
+                    <th><input class="form-control form-control-sm" placeholder="Search date" aria-label="Search events by date" v-model="eventSearch.date"></th>
+                    <th><input class="form-control form-control-sm" placeholder="Search site" aria-label="Search events by site" v-model="eventSearch.site"></th>
                 </tr>
             </thead>
             <tbody>
@@ -237,26 +255,45 @@
             <button class="btn btn-sm btn-outline-secondary" :disabled="eventPage >= totalPages" @click="eventPage++">Next</button>
         </div>
 
-        <h5 class="mb-3 mt-5">Registered users</h5>
-        <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredUsers, 'users.csv')">Export CSV</button>
-        <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="emailCsv">Email CSV</button>
+    <h5 class="mb-3 mt-5">Registered users</h5>
+
+    <div class="row g-3 mb-3" style="max-width: 600px">
+        <div class="col-12">
+            <label for="newsletter-subject" class="form-label">Newsletter subject</label>
+            <input id="newsletter-subject" class="form-control" v-model="newsletter.subject">
+        </div>
+        <div class="col-12">
+            <label for="newsletter-body" class="form-label">Message</label>
+            <textarea id="newsletter-body" class="form-control" rows="4" v-model="newsletter.body"></textarea>
+        </div>
+    </div>
+
+    <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredUsers, 'users.csv')">Export CSV</button>
+    <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="emailCsv">Email CSV</button>
+    <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="sendNewsletter" :disabled="selectedUsers.length === 0 || newsletterSending">
+        Send newsletter ({{ selectedUsers.length }})
+    </button>
+    <span v-if="newsletterResult" class="ms-3 text-success">{{ newsletterResult }}</span>
         <table class="table">
             <thead>
                 <tr>
-                    <th @click="sortUsersBy('firstname')" class="sortable">First Name</th>
-                    <th @click="sortUsersBy('lastname')" class="sortable">Last Name</th>
-                    <th @click="sortUsersBy('email')" class="sortable">Email</th>
-                    <th @click="sortUsersBy('role')" class="sortable">Role</th>
+                    <th><span class="visually-hidden">Select recipient</span></th>
+                    <th @click="sortUsersBy('firstname')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('firstname')">First Name</th>
+                    <th @click="sortUsersBy('lastname')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('lastname')">Last Name</th>
+                    <th @click="sortUsersBy('email')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('email')">Email</th>
+                    <th @click="sortUsersBy('role')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('role')">Role</th>
                 </tr>
                 <tr>
-                    <th><input class="form-control form-control-sm" placeholder="Search first name" v-model="userSearch.firstname"></th>
-                    <th><input class="form-control form-control-sm" placeholder="Search last name" v-model="userSearch.lastname"></th>
-                    <th><input class="form-control form-control-sm" placeholder="Search email" v-model="userSearch.email"></th>
-                    <th><input class="form-control form-control-sm" placeholder="Search role" v-model="userSearch.role"></th>
+                    <th></th>
+                    <th><input class="form-control form-control-sm" placeholder="Search first name" aria-label="Search users by first name" v-model="userSearch.firstname"></th>
+                    <th><input class="form-control form-control-sm" placeholder="Search last name" aria-label="Search users by last name" v-model="userSearch.lastname"></th>
+                    <th><input class="form-control form-control-sm" placeholder="Search email" aria-label="Search users by email" v-model="userSearch.email"></th>
+                    <th><input class="form-control form-control-sm" placeholder="Search role" aria-label="Search users by role" v-model="userSearch.role"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="user in pagedUsers" :key="user.id">
+                    <td><input type="checkbox" :value="user.email" v-model="selectedUsers" :aria-label="`Select ${user.firstname} ${user.lastname} as newsletter recipient`"></td>
                     <td>{{ user.firstname }}</td>
                     <td>{{ user.lastname }}</td>
                     <td>{{ user.email }}</td>
@@ -279,5 +316,10 @@
     .sortable 
     { 
         cursor: pointer; 
+    }
+
+    .sortable:focus-visible {
+        outline: 2px solid #006989;
+        outline-offset: -2px;
     }
 </style>
