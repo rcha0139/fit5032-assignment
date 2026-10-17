@@ -53,6 +53,33 @@
     const volunteerCount = () => users.value.filter((u) => u.role === 'volunteer').length;
     const adminCount = () => users.value.filter((u) => u.role === 'admin').length;
 
+    const userSearch = ref({ firstname: '', lastname: '', email: '', role: '' })
+    const userSort = ref({ column: 'firstname', direction: 'asc' })
+
+    const sortUsersBy = (column) => {
+        if (userSort.value.column === column) {
+            userSort.value.direction = userSort.value.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            userSort.value.column = column;
+            userSort.value.direction = 'asc';
+        }
+    }
+
+    const filteredUsers = computed(() => {
+        const filtered = users.value.filter((u) =>
+            u.firstname.toLowerCase().includes(userSearch.value.firstname.toLowerCase()) &&
+            u.lastname.toLowerCase().includes(userSearch.value.lastname.toLowerCase()) &&
+            u.email.toLowerCase().includes(userSearch.value.email.toLowerCase()) &&
+            u.role.toLowerCase().includes(userSearch.value.role.toLowerCase())
+        );
+
+        return [...filtered].sort((a, b) => {
+            const col = userSort.value.column;
+            const result = String(a[col]).localeCompare(String(b[col]));
+            return userSort.value.direction === 'asc' ? result : -result;
+        });
+    })
+
 </script>
 
 <template>
@@ -126,14 +153,20 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
+                    <th @click="sortUsersBy('firstname')" class="sortable">First Name</th>
+                    <th @click="sortUsersBy('lastname')" class="sortable">Last Name</th>
+                    <th @click="sortUsersBy('email')" class="sortable">Email</th>
+                    <th @click="sortUsersBy('role')" class="sortable">Role</th>
+                </tr>
+                <tr>
+                    <th><input class="form-control form-control-sm" placeholder="Search first name" v-model="userSearch.firstname"></th>
+                    <th><input class="form-control form-control-sm" placeholder="Search last name" v-model="userSearch.lastname"></th>
+                    <th><input class="form-control form-control-sm" placeholder="Search email" v-model="userSearch.email"></th>
+                    <th><input class="form-control form-control-sm" placeholder="Search role" v-model="userSearch.role"></th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="user in users" :key="user.id">
+                <tr v-for="user in filteredUsers" :key="user.id">
                     <td>{{ user.firstname }}</td>
                     <td>{{ user.lastname }}</td>
                     <td>{{ user.email }}</td>
