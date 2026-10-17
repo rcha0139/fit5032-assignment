@@ -188,7 +188,7 @@
                 <div class="col-6">
                     <div class="card h-100">
                         <div class="card-body text-center">
-                            <h2>{{ users.length }}</h2>
+                            <p class="h2 mb-0">{{ users.length }}</p>
                             <p class="mb-0 text-muted">Registered users</p>
                         </div>
                     </div>
@@ -196,7 +196,7 @@
                 <div class="col-6">
                     <div class="card h-100">
                         <div class="card-body text-center">
-                            <h2>{{ volunteerCount() }}</h2>
+                            <p class="h2 mb-0">{{ volunteerCount() }}</p>
                             <p class="mb-0 text-muted">Volunteers</p>
                         </div>
                     </div>
@@ -204,7 +204,7 @@
                 <div class="col-6">
                     <div class="card h-100">
                         <div class="card-body text-center">
-                            <h2>{{ adminCount() }}</h2>
+                            <p class="h2 mb-0">{{ adminCount() }}</p>
                             <p class="mb-0 text-muted">Admins</p>
                         </div>
                     </div>
@@ -212,7 +212,7 @@
                 <div class="col-6">
                     <div class="card h-100">
                         <div class="card-body text-center">
-                            <h2>{{ events.length }}</h2>
+                            <p class="h2 mb-0">{{ events.length }}</p>
                             <p class="mb-0 text-muted">Upcoming Events</p>
                         </div>
                     </div>
@@ -220,13 +220,13 @@
             </div>
         </div>
         <div class="col-md-5">
-            <h5 class="mb-3">Users by role</h5>
+            <h2 class="h5 mb-3">Users by role</h2>
             <div style="height: 220px">
                 <Doughnut :data="roleChartData" :options="{ maintainAspectRatio: false }" />
             </div>
         </div>
     </div>
-        <h5 class="mb-3">Upcoming events</h5>
+        <h2 class="h5 mb-3">Upcoming events</h2>
         <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredEvents, 'events.csv')">Export CSV</button>
         <table class="table">
             <thead>
@@ -255,7 +255,7 @@
             <button class="btn btn-sm btn-outline-secondary" :disabled="eventPage >= totalPages" @click="eventPage++">Next</button>
         </div>
 
-    <h5 class="mb-3 mt-5">Registered users</h5>
+    <h2 class="h5 mb-3 mt-5">Registered users</h2>
 
     <div class="row g-3 mb-3" style="max-width: 600px">
         <div class="col-12">
