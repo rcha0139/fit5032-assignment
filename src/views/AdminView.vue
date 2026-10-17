@@ -80,6 +80,14 @@
         });
     })
 
+    const userPage = ref(1)
+
+    const pagedUsers = computed(() => {
+        const start = (userPage.value - 1) * rowsPerPage;
+        return filteredUsers.value.slice(start, start + rowsPerPage);
+    })
+
+    const userTotalPages = computed(() => Math.ceil(filteredUsers.value.length / rowsPerPage));
 </script>
 
 <template>
@@ -166,7 +174,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="user in filteredUsers" :key="user.id">
+                <tr v-for="user in pagedUsers" :key="user.id">
                     <td>{{ user.firstname }}</td>
                     <td>{{ user.lastname }}</td>
                     <td>{{ user.email }}</td>
@@ -174,7 +182,11 @@
                 </tr>
             </tbody>
         </table>
-
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-sm btn-outline-secondary" :disabled="userPage === 1" @click="userPage--">Previous</button>
+            <span>Page {{ userPage }} of {{ userTotalPages }}</span>
+            <button class="btn btn-sm btn-outline-secondary" :disabled="userPage >= userTotalPages" @click="userPage++">Next</button>
+        </div>
     </div>
 </template>
 <style scoped>
