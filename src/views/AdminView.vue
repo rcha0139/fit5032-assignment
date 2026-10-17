@@ -88,6 +88,30 @@
     })
 
     const userTotalPages = computed(() => Math.ceil(filteredUsers.value.length / rowsPerPage));
+
+    const exportCsv = (rows, filename) => {
+        // bail if there's nothing
+        if (rows.length === 0) return;
+
+        // get column names from first object's keys
+        const headers = Object.keys(rows[0]);
+
+        // gives headers and structure for the csv file
+        const lines = [
+            headers.join(','),
+            ...rows.map((row) => headers.map((h) => `"${row[h]}"`).join(','))
+        ];
+        const csv = lines.join('\n');
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+
+    }
+
 </script>
 
 <template>
@@ -130,6 +154,7 @@
         </div>
 
         <h5 class="mb-3">Upcoming events</h5>
+        <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredEvents, 'events.csv')">Export CSV</button>
         <table class="table">
             <thead>
                 <tr>
@@ -158,6 +183,7 @@
         </div>
 
         <h5 class="mb-3 mt-5">Registered users</h5>
+        <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredUsers, 'users.csv')">Export CSV</button>
         <table class="table">
             <thead>
                 <tr>
