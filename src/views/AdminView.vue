@@ -1,7 +1,20 @@
 <script setup>
+
     import { ref, onMounted, computed } from 'vue';
     import { collection, getDocs } from 'firebase/firestore';
     import { db } from '@/firebase';
+    import { Doughnut } from 'vue-chartjs'
+    import { Chart, registerables } from 'chart.js'
+    import { httpsCallable } from 'firebase/functions';
+    import { functions } from '@/firebase';
+
+    const testPing = async () => {
+        const ping = httpsCallable(functions, 'ping');
+        const result = await ping();
+        console.log(result.data);
+    }
+
+    Chart.register(...registerables)
 
     const users = ref([])
     const events = ref([])
@@ -41,6 +54,14 @@
     })
 
     const totalPages = computed(() => Math.ceil(filteredEvents.value.length / rowsPerPage));
+
+    const roleChartData = computed(() => ({
+        labels: ['Volunteers', 'Admins'],
+        datasets: [{
+            data: [volunteerCount(), adminCount()],
+            backgroundColor: ['#006989', '#A3BAC3']
+        }]
+    }))
 
     onMounted(async () => {
         const usersSnap = await getDocs(collection(db, 'users'));
@@ -112,47 +133,81 @@
 
     }
 
+    const emailCsv = async () => {
+        console.log('clicked')
+        const headers = Object.keys(filteredUsers.value[0]);
+        const lines = [
+            headers.join(','),
+            ...filteredUsers.value.map((row) => headers.map((h) => `"${row[h]}"`).join(','))
+        ];
+        const csv = lines.join('\n');
+
+        const sendEmail = httpsCallable(functions, 'sendEmail');
+        try {
+            const result = await sendEmail({
+                to: 'rcha0139@student.monash.edu',
+                subject: 'Registered users report',
+                body: 'Please find the current user list attached.',
+                attachment: btoa(csv),
+                filename: 'users.csv'
+            });
+            console.log('sent', result);
+        } catch (e) {
+            console.error('failed', e);
+        }
+    }
+
 </script>
 
 <template>
     <div class="admin">
         <h1 class="mb-4">Admin Dashboard</h1>
 
-        <div class="row g-3 mb-5">
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h2>{{ users.length }}</h2>
-                        <p class="mb-0 text-muted">Registered users</p>
+        <button class="btn btn-sm btn-outline-secondary mb-3" @click="testPing">Test Ping</button>
+    <div class="row g-3 mb-4">
+        <div class="col-md-7">
+            <div class="row g-3 h-100">
+                <div class="col-6">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h2>{{ users.length }}</h2>
+                            <p class="mb-0 text-muted">Registered users</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h2>{{ volunteerCount() }}</h2>
-                        <p class="mb-0 text-muted">Volunteers</p>
+                <div class="col-6">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h2>{{ volunteerCount() }}</h2>
+                            <p class="mb-0 text-muted">Volunteers</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h2>{{ adminCount() }}</h2>
-                        <p class="mb-0 text-muted">Admins</p>
+                <div class="col-6">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h2>{{ adminCount() }}</h2>
+                            <p class="mb-0 text-muted">Admins</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h2>{{ events.length }}</h2>
-                        <p class="mb-0 text-muted">Upcoming Events</p>
+                <div class="col-6">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h2>{{ events.length }}</h2>
+                            <p class="mb-0 text-muted">Upcoming Events</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
+        <div class="col-md-5">
+            <h5 class="mb-3">Users by role</h5>
+            <div style="height: 220px">
+                <Doughnut :data="roleChartData" :options="{ maintainAspectRatio: false }" />
+            </div>
+        </div>
+    </div>
         <h5 class="mb-3">Upcoming events</h5>
         <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredEvents, 'events.csv')">Export CSV</button>
         <table class="table">
@@ -184,6 +239,7 @@
 
         <h5 class="mb-3 mt-5">Registered users</h5>
         <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredUsers, 'users.csv')">Export CSV</button>
+        <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="emailCsv">Email CSV</button>
         <table class="table">
             <thead>
                 <tr>
