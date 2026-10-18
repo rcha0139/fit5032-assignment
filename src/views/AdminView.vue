@@ -175,8 +175,14 @@
         doc.save(filename);
     }
 
+    const emailSending = ref(false)
+    const emailResult = ref('')
+
     const emailCsv = async () => {
         if (filteredUsers.value.length === 0) return;
+
+        emailSending.value = true;
+        emailResult.value = '';
 
         const csv = buildCsv(filteredUsers.value, userColumns);
 
@@ -189,8 +195,12 @@
                 attachment: btoa(csv),
                 filename: 'users.csv'
             });
+            emailResult.value = 'Report emailed to rcha0139@student.monash.edu';
         } catch (e) {
             console.error('failed', e);
+            emailResult.value = 'Could not send, check the console';
+        } finally {
+            emailSending.value = false;
         }
     }
 
@@ -327,13 +337,16 @@
 
     <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredUsers, userColumns, 'users.csv')">Export CSV</button>
     <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="exportPdf(filteredUsers, userColumns, 'users.pdf', 'Registered Users')">Export PDF</button>
-    <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="emailCsv">Email CSV</button>
+    <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="emailCsv" :disabled="emailSending">
+        {{ emailSending ? 'Sending...' : 'Email CSV' }}
+    </button>
     <button class="btn btn-sm mb-2 ms-2" style="background-color: #003647; color: white;"
             data-bs-toggle="modal" data-bs-target="#newsletterModal"
             :disabled="selectedUsers.length === 0">
         <i class="bi bi-envelope me-2" aria-hidden="true"></i>Send newsletter ({{ selectedUsers.length }})
     </button>
-    <span v-if="newsletterResult" class="ms-3 text-success">{{ newsletterResult }}</span>
+    <span v-if="emailResult" class="ms-3 text-success" role="status">{{ emailResult }}</span>
+    <span v-if="newsletterResult" class="ms-3 text-success" role="status">{{ newsletterResult }}</span>
         <table class="table">
             <thead>
                 <tr>
@@ -393,7 +406,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <span v-if="newsletterResult" class="me-auto text-success">{{ newsletterResult }}</span>
+                        <span v-if="newsletterResult" class="me-auto text-success" role="status">{{ newsletterResult }}</span>
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                             Close
                         </button>
