@@ -14,11 +14,15 @@
 
     const users = ref([])
     const events = ref([])
-    const eventSearch = ref({ name: '', date: '', site: '' })
 
+    // counts come from a Cloud Function rather than being derived in the browser
+    const stats = ref({ users: 0, volunteers: 0, admins: 0, events: 0 })
+
+    const eventSearch = ref({ name: '', date: '', site: '' })
     const eventSort = ref({ column: 'name', direction: 'asc' })
 
-    // which columns the exports include, and in what order
+    // Explicit column order for the CSV and PDF exports. Deriving it from
+    // Object.keys() gives whatever order Firestore returns the fields in.
     const eventColumns = [
         { key: 'name', label: 'Name' },
         { key: 'date', label: 'Date' },
@@ -80,6 +84,15 @@
 
         const eventsSnap = await getDocs(collection(db, 'events'));
         events.value = eventsSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+        // wrapped so a failed call leaves the rest of the dashboard working
+        try {
+            const getDashboardStats = httpsCallable(functions, 'getDashboardStats');
+            const result = await getDashboardStats();
+            stats.value = result.data;
+        } catch (error) {
+            console.error('stats failed', error);
+        }
     })
 
     const volunteerCount = () => users.value.filter((u) => u.role === 'volunteer').length;
@@ -130,7 +143,6 @@
     }
 
     const exportCsv = (rows, columns, filename) => {
-        // bail if there's nothing
         if (rows.length === 0) return;
 
         const csv = buildCsv(rows, columns);
@@ -188,6 +200,18 @@
     const newsletterSending = ref(false)
     const newsletterResult = ref('')
 
+    // Writable computed: reads true when every filtered row is selected,
+    // and writing to it selects or clears all of them.
+    const allSelected = computed({
+        get: () => filteredUsers.value.length > 0 &&
+                   filteredUsers.value.every((u) => selectedUsers.value.includes(u.email)),
+        set: (value) => {
+            selectedUsers.value = value ? filteredUsers.value.map((u) => u.email) : [];
+        }
+    })
+
+    // Sends one email per recipient in parallel, so nobody sees the others'
+    // addresses. Promise.all means one failure rejects the whole batch.
     const sendNewsletter = async () => {
         if (selectedUsers.value.length === 0) return;
 
@@ -216,14 +240,6 @@
         }
     }
 
-    const allSelected = computed({
-        get: () => filteredUsers.value.length > 0 &&
-                filteredUsers.value.every((u) => selectedUsers.value.includes(u.email)),
-        set: (value) => {
-            selectedUsers.value = value ? filteredUsers.value.map((u) => u.email) : [];
-        }
-    });
-
 </script>
 
 <template>
@@ -236,7 +252,7 @@
                 <div class="col-6">
                     <div class="card h-100">
                         <div class="card-body text-center">
-                            <p class="h2 mb-0">{{ users.length }}</p>
+                            <p class="h2 mb-0">{{ stats.users }}</p>
                             <p class="mb-0 text-muted">Registered users</p>
                         </div>
                     </div>
@@ -244,7 +260,7 @@
                 <div class="col-6">
                     <div class="card h-100">
                         <div class="card-body text-center">
-                            <p class="h2 mb-0">{{ volunteerCount() }}</p>
+                            <p class="h2 mb-0">{{ stats.volunteers }}</p>
                             <p class="mb-0 text-muted">Volunteers</p>
                         </div>
                     </div>
@@ -252,7 +268,7 @@
                 <div class="col-6">
                     <div class="card h-100">
                         <div class="card-body text-center">
-                            <p class="h2 mb-0">{{ adminCount() }}</p>
+                            <p class="h2 mb-0">{{ stats.admins }}</p>
                             <p class="mb-0 text-muted">Admins</p>
                         </div>
                     </div>
@@ -260,7 +276,7 @@
                 <div class="col-6">
                     <div class="card h-100">
                         <div class="card-body text-center">
-                            <p class="h2 mb-0">{{ events.length }}</p>
+                            <p class="h2 mb-0">{{ stats.events }}</p>
                             <p class="mb-0 text-muted">Upcoming Events</p>
                         </div>
                     </div>
@@ -321,17 +337,17 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th><span class="visually-hidden">Select recipient</span></th>
+                    <th>
+                        <input type="checkbox" v-model="allSelected"
+                               aria-label="Select all users matching the current search">
+                    </th>
                     <th @click="sortUsersBy('firstname')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('firstname')">First Name</th>
                     <th @click="sortUsersBy('lastname')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('lastname')">Last Name</th>
                     <th @click="sortUsersBy('email')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('email')">Email</th>
                     <th @click="sortUsersBy('role')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('role')">Role</th>
                 </tr>
                 <tr>
-                    <th>
-                        <input type="checkbox" v-model="allSelected"
-                            aria-label="Select all users matching the current search">
-                    </th>
+                    <th></th>
                     <th><input class="form-control form-control-sm" placeholder="Search first name" aria-label="Search users by first name" v-model="userSearch.firstname"></th>
                     <th><input class="form-control form-control-sm" placeholder="Search last name" aria-label="Search users by last name" v-model="userSearch.lastname"></th>
                     <th><input class="form-control form-control-sm" placeholder="Search email" aria-label="Search users by email" v-model="userSearch.email"></th>
