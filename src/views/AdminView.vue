@@ -15,8 +15,23 @@
     const users = ref([])
     const events = ref([])
     const eventSearch = ref({ name: '', date: '', site: '' })
-    
+
     const eventSort = ref({ column: 'name', direction: 'asc' })
+
+    // which columns the exports include, and in what order
+    const eventColumns = [
+        { key: 'name', label: 'Name' },
+        { key: 'date', label: 'Date' },
+        { key: 'site', label: 'Site' },
+        { key: 'description', label: 'Description' }
+    ]
+
+    const userColumns = [
+        { key: 'firstname', label: 'First Name' },
+        { key: 'lastname', label: 'Last Name' },
+        { key: 'email', label: 'Email' },
+        { key: 'role', label: 'Role' }
+    ]
 
     const sortBy = (column) => {
         if (eventSort.value.column === column) {
@@ -106,19 +121,19 @@
 
     const userTotalPages = computed(() => Math.ceil(filteredUsers.value.length / rowsPerPage));
 
-    const exportCsv = (rows, filename) => {
+    const buildCsv = (rows, columns) => {
+        const lines = [
+            columns.map((c) => c.label).join(','),
+            ...rows.map((row) => columns.map((c) => `"${row[c.key] ?? ''}"`).join(','))
+        ];
+        return lines.join('\n');
+    }
+
+    const exportCsv = (rows, columns, filename) => {
         // bail if there's nothing
         if (rows.length === 0) return;
 
-        // get column names from first object's keys
-        const headers = Object.keys(rows[0]);
-
-        // gives headers and structure for the csv file
-        const lines = [
-            headers.join(','),
-            ...rows.map((row) => headers.map((h) => `"${row[h]}"`).join(','))
-        ];
-        const csv = lines.join('\n');
+        const csv = buildCsv(rows, columns);
 
         const blob = new Blob([csv], { type: 'text/csv' });
         const link = document.createElement('a');
@@ -126,13 +141,10 @@
         link.download = filename;
         link.click();
         URL.revokeObjectURL(link.href);
-
     }
 
-    const exportPdf = (rows, filename, title) => {
+    const exportPdf = (rows, columns, filename, title) => {
         if (rows.length === 0) return;
-
-        const headers = Object.keys(rows[0]).filter((h) => h !== 'id');
 
         const doc = new jsPDF();
         doc.setFontSize(14);
@@ -141,9 +153,10 @@
         doc.text(`Generated ${new Date().toLocaleDateString()}`, 14, 22);
 
         autoTable(doc, {
-            head: [headers],
-            body: rows.map((row) => headers.map((h) => String(row[h]))),
+            head: [columns.map((c) => c.label)],
+            body: rows.map((row) => columns.map((c) => String(row[c.key] ?? ''))),
             startY: 28,
+            styles: { fontSize: 9, cellPadding: 3 },
             headStyles: { fillColor: [0, 105, 137] }
         });
 
@@ -151,12 +164,9 @@
     }
 
     const emailCsv = async () => {
-        const headers = Object.keys(filteredUsers.value[0]);
-        const lines = [
-            headers.join(','),
-            ...filteredUsers.value.map((row) => headers.map((h) => `"${row[h]}"`).join(','))
-        ];
-        const csv = lines.join('\n');
+        if (filteredUsers.value.length === 0) return;
+
+        const csv = buildCsv(filteredUsers.value, userColumns);
 
         const sendEmail = httpsCallable(functions, 'sendEmail');
         try {
@@ -172,32 +182,47 @@
         }
     }
 
-    const newsletter = ref({ subject: '', body: '' });
-
-    const selectedUsers = ref([]);
-    const newsletterSending = ref(false);
-    const newsletterResult = ref(null);
+    // newsletter
+    const newsletter = ref({ subject: '', body: '' })
+    const selectedUsers = ref([])
+    const newsletterSending = ref(false)
+    const newsletterResult = ref('')
 
     const sendNewsletter = async () => {
         if (selectedUsers.value.length === 0) return;
+
         newsletterSending.value = true;
-        newsletterResult.value = null;
+        newsletterResult.value = '';
 
         const sendEmail = httpsCallable(functions, 'sendEmail');
         try {
-            await sendEmail({
-                to: selectedUsers.value,
-                subject: newsletter.value.subject,
-                body: newsletter.value.body,
-                attachment: btoa(newsletter.value.body),
-                filename: 'newsletter.txt'
-            });
-            newsletterResult.value = `Sent to ${selectedUsers.value.length} recipients.`;
+            await Promise.all(
+                selectedUsers.value.map((email) =>
+                    sendEmail({
+                        to: email,
+                        subject: newsletter.value.subject,
+                        body: newsletter.value.body
+                    })
+                )
+            );
+            newsletterResult.value = `Sent to ${selectedUsers.value.length} recipients`;
+            newsletter.value = { subject: '', body: '' };
+            selectedUsers.value = [];
         } catch (e) {
-            newsletterResult.value = 'Failed to send.';
+            console.error('failed', e);
+            newsletterResult.value = 'Could not send, check the console';
+        } finally {
+            newsletterSending.value = false;
         }
-        newsletterSending.value = false;
     }
+
+    const allSelected = computed({
+        get: () => filteredUsers.value.length > 0 &&
+                filteredUsers.value.every((u) => selectedUsers.value.includes(u.email)),
+        set: (value) => {
+            selectedUsers.value = value ? filteredUsers.value.map((u) => u.email) : [];
+        }
+    });
 
 </script>
 
@@ -250,8 +275,8 @@
         </div>
     </div>
         <h2 class="h5 mb-3">Upcoming events</h2>
-        <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredEvents, 'events.csv')">Export CSV</button>
-        <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="exportPdf(filteredEvents, 'events.pdf', 'Upcoming Events')">Export PDF</button>
+        <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredEvents, eventColumns, 'events.csv')">Export CSV</button>
+        <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="exportPdf(filteredEvents, eventColumns, 'events.pdf', 'Upcoming Events')">Export PDF</button>
         <table class="table">
             <thead>
                 <tr>
@@ -281,22 +306,13 @@
 
     <h2 class="h5 mb-3 mt-5">Registered users</h2>
 
-    <div class="row g-3 mb-3" style="max-width: 600px">
-        <div class="col-12">
-            <label for="newsletter-subject" class="form-label">Newsletter subject</label>
-            <input id="newsletter-subject" class="form-control" v-model="newsletter.subject">
-        </div>
-        <div class="col-12">
-            <label for="newsletter-body" class="form-label">Message</label>
-            <textarea id="newsletter-body" class="form-control" rows="4" v-model="newsletter.body"></textarea>
-        </div>
-    </div>
-
-    <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredUsers, 'users.csv')">Export CSV</button>
-    <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="exportPdf(filteredUsers, 'users.pdf', 'Registered Users')">Export PDF</button>
+    <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredUsers, userColumns, 'users.csv')">Export CSV</button>
+    <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="exportPdf(filteredUsers, userColumns, 'users.pdf', 'Registered Users')">Export PDF</button>
     <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="emailCsv">Email CSV</button>
-    <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="sendNewsletter" :disabled="selectedUsers.length === 0 || newsletterSending">
-        Send newsletter ({{ selectedUsers.length }})
+    <button class="btn btn-sm mb-2 ms-2" style="background-color: #003647; color: white;"
+            data-bs-toggle="modal" data-bs-target="#newsletterModal"
+            :disabled="selectedUsers.length === 0">
+        <i class="bi bi-envelope me-2" aria-hidden="true"></i>Send newsletter ({{ selectedUsers.length }})
     </button>
     <span v-if="newsletterResult" class="ms-3 text-success">{{ newsletterResult }}</span>
         <table class="table">
@@ -309,7 +325,10 @@
                     <th @click="sortUsersBy('role')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('role')">Role</th>
                 </tr>
                 <tr>
-                    <th></th>
+                    <th>
+                        <input type="checkbox" v-model="allSelected"
+                            aria-label="Select all users matching the current search">
+                    </th>
                     <th><input class="form-control form-control-sm" placeholder="Search first name" aria-label="Search users by first name" v-model="userSearch.firstname"></th>
                     <th><input class="form-control form-control-sm" placeholder="Search last name" aria-label="Search users by last name" v-model="userSearch.lastname"></th>
                     <th><input class="form-control form-control-sm" placeholder="Search email" aria-label="Search users by email" v-model="userSearch.email"></th>
@@ -330,6 +349,43 @@
             <button class="btn btn-sm btn-outline-secondary" :disabled="userPage === 1" @click="userPage--">Previous</button>
             <span>Page {{ userPage }} of {{ userTotalPages }}</span>
             <button class="btn btn-sm btn-outline-secondary" :disabled="userPage >= userTotalPages" @click="userPage++">Next</button>
+        </div>
+
+        <div class="modal fade" id="newsletterModal" tabindex="-1"
+             aria-labelledby="newsletterModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title h5" id="newsletterModalLabel">Send newsletter</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted">
+                            Sending to {{ selectedUsers.length }} selected
+                            {{ selectedUsers.length === 1 ? 'recipient' : 'recipients' }}.
+                        </p>
+                        <div class="mb-3">
+                            <label for="newsletter-subject" class="form-label">Subject</label>
+                            <input id="newsletter-subject" class="form-control" v-model="newsletter.subject">
+                        </div>
+                        <div class="mb-0">
+                            <label for="newsletter-body" class="form-label">Message</label>
+                            <textarea id="newsletter-body" class="form-control" rows="6" v-model="newsletter.body"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <span v-if="newsletterResult" class="me-auto text-success">{{ newsletterResult }}</span>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                        <button type="button" class="btn" style="background-color: #003647; color: white;"
+                                @click="sendNewsletter"
+                                :disabled="newsletterSending || !newsletter.subject || !newsletter.body">
+                            {{ newsletterSending ? 'Sending...' : 'Send' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>

@@ -41,3 +41,6 @@ __screenshots__/
 # environment file
 .env
 .env.local
+
+# service account
+serviceAccount.json
