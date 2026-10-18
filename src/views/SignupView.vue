@@ -4,6 +4,7 @@ import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'vue-router';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
+import { signInWithGoogle } from '@/composables/useAuth';
 
 const formData = ref({
     email: '',
@@ -142,6 +143,16 @@ const register = () => {
 
 const registerError = ref(null);
 
+const googleSignup = async () => {
+    registerError.value = null;
+    try {
+        await signInWithGoogle();
+        router.push('/');
+    } catch (e) {
+        registerError.value = 'Google sign-up failed. Please try again.';
+    }
+};
+
 </script>
 
 <template>
@@ -208,6 +219,12 @@ const registerError = ref(null);
                         <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
                     </div>
 
+                    <div class="text-center mt-3">
+                        <button type="button" class="btn btn-outline-secondary" @click="googleSignup">
+                            <i class="bi bi-google me-2" aria-hidden="true"></i>Sign up with Google
+                        </button>
+                    </div>
+
                     <p class="text-center mt-3">
                         Already have an account? <RouterLink to="/login">Login</RouterLink>
                     </p>
@@ -245,4 +262,3 @@ const registerError = ref(null);
     }
 
 </style>
-

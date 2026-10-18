@@ -2,6 +2,17 @@
 import { ref } from 'vue'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'vue-router';
+import { signInWithGoogle } from '@/composables/useAuth';
+
+const googleLogin = async () => {
+    loginError.value = null;
+    try {
+        await signInWithGoogle();
+        router.push('/');
+    } catch (e) {
+        loginError.value = 'Google sign-in failed. Please try again.';
+    }
+};
 
 const formData = ref({
     email: '',
@@ -107,6 +118,12 @@ const login = () => {
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary me-2">Submit</button>
                         <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <button type="button" class="btn btn-outline-secondary" @click="googleLogin">
+                            <i class="bi bi-google me-2" aria-hidden="true"></i>Sign in with Google
+                        </button>
                     </div>
 
                     <p class="text-center mt-3">
