@@ -1,14 +1,23 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase';
 
 const events = ref([]);
+const eventPage = ref(0);
+const perPage = 3;
 
 onMounted(async () => {
     const snap = await getDocs(collection(db, 'events'));
-    events.value = snap.docs.map((d) => ({ id: d.id, ...d.data() })).slice(0, 3);
+    events.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 });
+
+const pagedEvents = computed(() => {
+    const start = eventPage.value * perPage;
+    return events.value.slice(start, start + perPage);
+});
+
+const totalPages = computed(() => Math.ceil(events.value.length / perPage));
 </script>
 
 <template>
@@ -69,9 +78,28 @@ onMounted(async () => {
                 </div>
             </div>
 
-            <h2 class="h4 mb-3">Upcoming events</h2>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2 class="h4 mb-0">Upcoming events</h2>
+
+                <div v-if="totalPages > 1" class="d-flex align-items-center gap-2">
+                    <button class="btn btn-sm btn-outline-secondary"
+                            :disabled="eventPage === 0"
+                            @click="eventPage--"
+                            aria-label="Previous events">
+                        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                    </button>
+                    <small class="text-muted">{{ eventPage + 1 }} of {{ totalPages }}</small>
+                    <button class="btn btn-sm btn-outline-secondary"
+                            :disabled="eventPage >= totalPages - 1"
+                            @click="eventPage++"
+                            aria-label="Next events">
+                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
             <div class="row g-4 mb-4">
-                <div class="col-md-4" v-for="event in events" :key="event.id">
+                <div class="col-md-4" v-for="event in pagedEvents" :key="event.id">
                     <div class="card h-100">
                         <div class="card-body">
                             <h3 class="h6 card-title">{{ event.name }}</h3>
