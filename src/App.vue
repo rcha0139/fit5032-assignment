@@ -12,5 +12,12 @@ import NavBar from './components/NavBar.vue';
     </main>
 </template>
 
-<style scoped>
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1, h2, h3, h4, h5, h6, .navbar-brand, .btn {
+        font-family: 'Lora', serif;
+    }
 </style>
