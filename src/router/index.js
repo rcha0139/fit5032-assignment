@@ -26,11 +26,6 @@ const routes = [
         component: AboutView
     },
     {
-        path: '/learn',
-        name: 'Learn',
-        component: LearnView
-    },
-    {
         path: '/projects',
         name: 'Projects',
         component: ProjectsView

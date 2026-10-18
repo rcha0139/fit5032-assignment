@@ -29,10 +29,6 @@
             </li>
 
             <li class="nav-item">
-            <router-link to="/learn" class="nav-link" active-class="active">Learn</router-link>
-            </li>
-
-            <li class="nav-item">
             <router-link to="/projects" class="nav-link" active-class="active">Projects</router-link>
             </li>
 
