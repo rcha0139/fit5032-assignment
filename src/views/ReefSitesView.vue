@@ -35,7 +35,7 @@
             const from = `${position.coords.longitude},${position.coords.latitude}`;
             const to = `${wharf.long},${wharf.lat}`;
 
-            const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${from};${to}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
+            const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${from};${to}?geometries=geojson&overview=full&access_token=${mapboxgl.accessToken}`;
             const response = await fetch(url);
             const data = await response.json();
             const route = data.routes[0];
