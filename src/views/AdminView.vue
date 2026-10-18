@@ -7,6 +7,8 @@
     import { Chart, registerables } from 'chart.js'
     import { httpsCallable } from 'firebase/functions';
     import { functions } from '@/firebase';
+    import jsPDF from 'jspdf';
+    import autoTable from 'jspdf-autotable';
 
     Chart.register(...registerables)
 
@@ -127,6 +129,27 @@
 
     }
 
+    const exportPdf = (rows, filename, title) => {
+        if (rows.length === 0) return;
+
+        const headers = Object.keys(rows[0]).filter((h) => h !== 'id');
+
+        const doc = new jsPDF();
+        doc.setFontSize(14);
+        doc.text(title, 14, 16);
+        doc.setFontSize(10);
+        doc.text(`Generated ${new Date().toLocaleDateString()}`, 14, 22);
+
+        autoTable(doc, {
+            head: [headers],
+            body: rows.map((row) => headers.map((h) => String(row[h]))),
+            startY: 28,
+            headStyles: { fillColor: [0, 105, 137] }
+        });
+
+        doc.save(filename);
+    }
+
     const emailCsv = async () => {
         const headers = Object.keys(filteredUsers.value[0]);
         const lines = [
@@ -228,6 +251,7 @@
     </div>
         <h2 class="h5 mb-3">Upcoming events</h2>
         <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredEvents, 'events.csv')">Export CSV</button>
+        <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="exportPdf(filteredEvents, 'events.pdf', 'Upcoming Events')">Export PDF</button>
         <table class="table">
             <thead>
                 <tr>
@@ -269,6 +293,7 @@
     </div>
 
     <button class="btn btn-sm btn-outline-secondary mb-2" @click="exportCsv(filteredUsers, 'users.csv')">Export CSV</button>
+    <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="exportPdf(filteredUsers, 'users.pdf', 'Registered Users')">Export PDF</button>
     <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="emailCsv">Email CSV</button>
     <button class="btn btn-sm btn-outline-secondary mb-2 ms-2" @click="sendNewsletter" :disabled="selectedUsers.length === 0 || newsletterSending">
         Send newsletter ({{ selectedUsers.length }})
