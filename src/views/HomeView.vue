@@ -29,42 +29,43 @@ onMounted(async () => {
 
         <div class="container py-5">
 
-            <div class="row g-4 mb-5">
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h2 class="h5 card-title">The problem</h2>
-                            <p class="card-text">
-                                Five mass bleaching events in eight years have pushed the reef
-                                to its limits. Warming water, sediment runoff and nutrient
-                                pollution are all working against recovery.
-                            </p>
-                        </div>
-                    </div>
+            <div class="row align-items-center g-5 mb-5">
+                <div class="col-md-6">
+                    <img class="feature-img" src="/images/bleached-coral.jpg" alt="Bleached coral on a reef flat">
                 </div>
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h2 class="h5 card-title">What we do</h2>
-                            <p class="card-text">
-                                We run offshore coral nurseries, work with landholders to cut
-                                runoff, and train divers to monitor reef health across the
-                                marine park.
-                            </p>
-                        </div>
-                    </div>
+                <div class="col-md-6 px-md-4">
+                    <h2 class="h4">The problem</h2>
+                    <p>
+                        Five mass bleaching events in eight years have pushed the reef to its
+                        limits. Warming water, sediment runoff and nutrient pollution are all
+                        working against recovery.
+                    </p>
                 </div>
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h2 class="h5 card-title">How you can help</h2>
-                            <p class="card-text">
-                                Join a beach clean-up, train as a reef health surveyor, or
-                                dive with our restoration team. No experience needed for most
-                                of what we do.
-                            </p>
-                        </div>
-                    </div>
+            </div>
+
+            <div class="row align-items-center g-5 mb-5 flex-md-row-reverse">
+                <div class="col-md-6">
+                    <img class="feature-img" src="/images/coral-nursery.jpg" alt="Coral fragments growing on a nursery frame">
+                </div>
+                <div class="col-md-6 px-md-4">
+                    <h2 class="h4">What we do</h2>
+                    <p>
+                        We run offshore coral nurseries, work with landholders to cut runoff,
+                        and train divers to monitor reef health across the marine park.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row align-items-center g-5 mb-5">
+                <div class="col-md-6">
+                    <img class="feature-img" src="/images/reef-monitoring.jpg" alt="A diver recording coral condition on a survey slate">
+                </div>
+                <div class="col-md-6 px-md-4">
+                    <h2 class="h4">How you can help</h2>
+                    <p>
+                        Join a beach clean-up, train as a reef health surveyor, or dive with
+                        our restoration team. No experience needed for most of what we do.
+                    </p>
                 </div>
             </div>
 
@@ -119,5 +120,12 @@ onMounted(async () => {
     .btn-primary:hover {
         background-color: #00587a;
         border-color: #00587a;
+    }
+
+    .feature-img {
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+        border-radius: 8px;
     }
 </style>
