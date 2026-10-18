@@ -1,9 +1,13 @@
 <script setup>
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, computed } from 'vue';
     import { collection, getDocs } from 'firebase/firestore';
     import { db } from '@/firebase';
     import mapboxgl from 'mapbox-gl';
     import 'mapbox-gl/dist/mapbox-gl.css';
+    import { Bar } from 'vue-chartjs';
+    import { Chart, registerables } from 'chart.js';
+
+    Chart.register(...registerables);
 
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -84,6 +88,29 @@
                 .addTo(map);
         });
     });
+
+    const coverChartData = computed(() => ({
+        labels: sites.value.map((s) => s.name),
+        datasets: [{
+            label: 'Coral cover (%)',
+            data: sites.value.map((s) => s.coralcover),
+            backgroundColor: '#006989'
+        }]
+    }));
+
+    const coverChartOptions = {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, max: 100, title: { display: true, text: 'Coral cover (%)' } }
+        },
+        onClick: (event, elements) => {
+            if (elements.length > 0) {
+                selectedSite.value = sites.value[elements[0].index].id;
+                flyToSite();
+            }
+        }
+    };
 </script>
 
 <template>
@@ -104,6 +131,12 @@
         </p>
 
         <div ref="mapContainer" style="height: 500px"></div>
+    
+        <h2 class="h5 mt-5 mb-2">Coral cover by site</h2>
+        <p class="text-muted">Select a bar to centre the map on that site.</p>
+        <div style="height: 320px">
+            <Bar :data="coverChartData" :options="coverChartOptions" />
+        </div>
     </div>
 </template>
 
