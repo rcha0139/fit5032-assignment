@@ -250,6 +250,26 @@
         }
     }
 
+    const eventSortIcon = (column) => {
+        if (eventSort.value.column !== column) return 'bi bi-arrow-down-up';
+        return eventSort.value.direction === 'asc' ? 'bi bi-arrow-up' : 'bi bi-arrow-down';
+    }
+
+    const eventAriaSort = (column) => {
+        if (eventSort.value.column !== column) return 'none';
+        return eventSort.value.direction === 'asc' ? 'ascending' : 'descending';
+    }
+
+    const userSortIcon = (column) => {
+        if (userSort.value.column !== column) return 'bi bi-arrow-down-up';
+        return userSort.value.direction === 'asc' ? 'bi bi-arrow-up' : 'bi bi-arrow-down';
+    }
+
+    const userAriaSort = (column) => {
+        if (userSort.value.column !== column) return 'none';
+        return userSort.value.direction === 'asc' ? 'ascending' : 'descending';
+    }
+
 </script>
 
 <template>
@@ -309,9 +329,15 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th @click="sortBy('name')" class="sortable" tabindex="0" @keydown.enter="sortBy('name')">Name</th>
-                    <th @click="sortBy('date')" class="sortable" tabindex="0" @keydown.enter="sortBy('date')">Date</th>
-                    <th @click="sortBy('site')" class="sortable" tabindex="0" @keydown.enter="sortBy('site')">Site</th>
+                    <th @click="sortBy('name')" class="sortable" tabindex="0" @keydown.enter="sortBy('name')" :aria-sort="eventAriaSort('name')">
+                        Name <i :class="eventSortIcon('name')" aria-hidden="true"></i>
+                    </th>
+                    <th @click="sortBy('date')" class="sortable" tabindex="0" @keydown.enter="sortBy('date')" :aria-sort="eventAriaSort('date')">
+                        Date <i :class="eventSortIcon('date')" aria-hidden="true"></i>
+                    </th>
+                    <th @click="sortBy('site')" class="sortable" tabindex="0" @keydown.enter="sortBy('site')" :aria-sort="eventAriaSort('site')">
+                        Site <i :class="eventSortIcon('site')" aria-hidden="true"></i>
+                    </th>
                 </tr>
                 <tr>
                     <th><input class="form-control form-control-sm" placeholder="Search name" aria-label="Search events by name" v-model="eventSearch.name"></th>
@@ -352,12 +378,20 @@
                 <tr>
                     <th>
                         <input type="checkbox" v-model="allSelected"
-                               aria-label="Select all users matching the current search">
+                            aria-label="Select all users matching the current search">
                     </th>
-                    <th @click="sortUsersBy('firstname')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('firstname')">First Name</th>
-                    <th @click="sortUsersBy('lastname')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('lastname')">Last Name</th>
-                    <th @click="sortUsersBy('email')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('email')">Email</th>
-                    <th @click="sortUsersBy('role')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('role')">Role</th>
+                    <th @click="sortUsersBy('firstname')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('firstname')" :aria-sort="userAriaSort('firstname')">
+                        First Name <i :class="userSortIcon('firstname')" aria-hidden="true"></i>
+                    </th>
+                    <th @click="sortUsersBy('lastname')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('lastname')" :aria-sort="userAriaSort('lastname')">
+                        Last Name <i :class="userSortIcon('lastname')" aria-hidden="true"></i>
+                    </th>
+                    <th @click="sortUsersBy('email')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('email')" :aria-sort="userAriaSort('email')">
+                        Email <i :class="userSortIcon('email')" aria-hidden="true"></i>
+                    </th>
+                    <th @click="sortUsersBy('role')" class="sortable" tabindex="0" @keydown.enter="sortUsersBy('role')" :aria-sort="userAriaSort('role')">
+                        Role <i :class="userSortIcon('role')" aria-hidden="true"></i>
+                    </th>
                 </tr>
                 <tr>
                     <th></th>
@@ -434,5 +468,15 @@
     .sortable:focus-visible {
         outline: 2px solid #006989;
         outline-offset: -2px;
+    }
+
+    .sortable i {
+        font-size: 0.75rem;
+        opacity: 0.4;
+    }
+
+    .sortable[aria-sort="ascending"] i,
+    .sortable[aria-sort="descending"] i {
+        opacity: 1;
     }
 </style>
