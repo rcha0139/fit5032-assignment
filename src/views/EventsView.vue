@@ -3,6 +3,7 @@
     import { ref, onMounted } from 'vue';
     import { db } from '@/firebase';
     import { currentUser } from '@/composables/useAuth';
+    import { RouterLink } from 'vue-router';
 
     const events = ref([])
     const ratings = ref([])
@@ -51,6 +52,10 @@ const myRatingFor = (eventId) => {
 <template>
     <div class="events">
         <h1>Events</h1>
+        <p v-if="!currentUser" class="text-muted mb-4">
+            <RouterLink to="/login">Log in</RouterLink> or
+            <RouterLink to="/signup">sign up</RouterLink> to rate events.
+        </p>
         <div class="row">
             <div class="col-md-6 mb-4" v-for="event in events" :key="event.id">
                 <div class="card h-100">
@@ -85,6 +90,14 @@ const myRatingFor = (eventId) => {
 
     .star {
         cursor: pointer;
+    }
+
+    .events a {
+        color: #006989;
+    }
+
+    .events a:hover {
+        color: #003647;
     }
 
 </style>
