@@ -272,6 +272,9 @@
             <div style="height: 220px">
                 <Doughnut :data="roleChartData" :options="{ maintainAspectRatio: false }" />
             </div>
+            <p class="visually-hidden">
+                {{ volunteerCount() }} volunteers and {{ adminCount() }} admins.
+            </p>
         </div>
     </div>
         <h2 class="h5 mb-3">Upcoming events</h2>

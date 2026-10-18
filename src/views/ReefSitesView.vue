@@ -82,9 +82,21 @@
         });
 
         sites.value.forEach((site) => {
+            // built as DOM nodes rather than an HTML string, so site data
+            // from Firestore can never be parsed as markup (XSS)
+            const content = document.createElement('div');
+
+            const title = document.createElement('strong');
+            title.textContent = site.name;
+
+            const status = document.createElement('div');
+            status.textContent = site.status;
+
+            content.append(title, status);
+
             new mapboxgl.Marker()
                 .setLngLat([site.long, site.lat])
-                .setPopup(new mapboxgl.Popup().setHTML(`<strong>${site.name}</strong><br>${site.status}`))
+                .setPopup(new mapboxgl.Popup().setDOMContent(content))
                 .addTo(map);
         });
     });
@@ -136,6 +148,10 @@
         <p class="text-muted">Select a bar to centre the map on that site.</p>
         <div style="height: 320px">
             <Bar :data="coverChartData" :options="coverChartOptions" />
+            <p class="visually-hidden">
+                Coral cover by site:
+                <span v-for="site in sites" :key="site.id">{{ site.name }}, {{ site.coralcover }} percent. </span>
+            </p>
         </div>
     </div>
 </template>

@@ -72,9 +72,11 @@ const myRatingFor = (eventId) => {
                         <div v-if="currentUser">
                             <small class="text-muted d-block">Your rating</small>
                             
-                            <span class="star" v-for="n in 5" :key="n" @click="rate(event.id, n)">
-                                <i :class="n <= myRatingFor(event.id) ? 'bi bi-star-fill' : 'bi bi-star'"></i>
-                            </span>
+                            <button type="button" class="star" v-for="n in 5" :key="n"
+                                    @click="rate(event.id, n)"
+                                    :aria-label="`Rate ${event.name} ${n} out of 5`">
+                                <i :class="n <= myRatingFor(event.id) ? 'bi bi-star-fill' : 'bi bi-star'" aria-hidden="true"></i>
+                            </button>
                         </div>
                     </div>
                 </div> 
@@ -98,6 +100,19 @@ const myRatingFor = (eventId) => {
 
     .events a:hover {
         color: #003647;
+    }
+
+    .star {
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0 2px;
+        color: #006989;
+    }
+
+    .star:focus-visible {
+        outline: 2px solid #006989;
+        outline-offset: 2px;
     }
 
 </style>
